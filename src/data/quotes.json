@@ -1,0 +1,1281 @@
+{
+  "vectors": {
+    "typosquat": "A package named to be mistaken for a popular one",
+    "dependency-confusion": "A public package hijacking the name of a private/internal one",
+    "install-script": "Code that runs on install (pre/post/install scripts, trustedDependencies, curl | sh)",
+    "maintainer-takeover": "Abandoned, deprecated or hijacked packages and maintainer accounts",
+    "malicious-update": "A trusted package shipping a poisoned new release",
+    "version-drift": "No lockfile, loose ranges, '*' or 'latest'",
+    "leaked-secrets": "Tokens and .env files exposed in the repo",
+    "remote-source": "Dependencies pulled from git branches or URLs instead of the registry",
+    "known-vuln": "Published advisories left unpatched",
+    "ci-pipeline": "Build systems, CI runners and caches",
+    "starjacking": "Fake popularity: borrowed stars, inflated downloads",
+    "attack-surface": "Sheer number and sprawl of dependencies",
+    "general": "Timeless strategy"
+  },
+  "types": {
+    "auth": "Login, sessions, JWT, password hashing",
+    "crypto": "Ciphers, hashing, signing, randomness",
+    "web3": "Wallets and blockchain clients",
+    "http": "Servers, clients, sockets, proxies",
+    "build": "Bundlers, compilers, transpilers, CSS tooling",
+    "cli": "Terminal tools, prompts, colors",
+    "logging": "Loggers and debug output",
+    "database": "ORMs, drivers, query builders",
+    "ui": "Frontend frameworks and components",
+    "test": "Test runners, mocks, browser automation",
+    "types": "@types packages",
+    "native": "Native addons and compiled binaries",
+    "config": "Env and configuration loaders",
+    "lint": "Linters, formatters, git hooks"
+  },
+  "classic": [
+    {
+      "q": "All warfare is based on deception.",
+      "vectors": [
+        "typosquat",
+        "starjacking"
+      ]
+    },
+    {
+      "q": "The supreme art of war is to subdue the enemy without fighting.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "If you know the enemy and know yourself, you need not fear the result of a hundred battles.",
+      "vectors": [
+        "general",
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Let your plans be dark and impenetrable as night, and when you move, fall like a thunderbolt.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "Attack him where he is unprepared, appear where you are not expected.",
+      "vectors": [
+        "known-vuln",
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The art of war teaches us to rely not on the likelihood of the enemy’s not coming, but on our own readiness to receive him.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "To secure ourselves against defeat lies in our own hands, but the opportunity of defeating the enemy is provided by the enemy himself.",
+      "vectors": [
+        "leaked-secrets",
+        "general"
+      ]
+    },
+    {
+      "q": "Rapidity is the essence of war: take advantage of the enemy’s unreadiness, make your way by unexpected routes, and attack unguarded spots.",
+      "vectors": [
+        "install-script",
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "Hold out baits to entice the enemy. Feign disorder, and crush him.",
+      "vectors": [
+        "typosquat",
+        "starjacking"
+      ]
+    },
+    {
+      "q": "He will win who knows when to fight and when not to fight.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "There is no instance of a country having benefited from prolonged warfare.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Water shapes its course according to the nature of the ground over which it flows.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "O divine art of subtlety and secrecy! Through you we learn to be invisible, through you inaudible.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "The victorious strategist only seeks battle after the victory has been won.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Thus, what is of supreme importance in war is to attack the enemy’s strategy.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "In war, then, let your great object be victory, not lengthy campaigns.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "If you know neither the enemy nor yourself, you will succumb in every battle.",
+      "vectors": [
+        "version-drift",
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "If you know yourself but not the enemy, for every victory gained you will also suffer a defeat.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "The good fighter is able to secure himself against defeat, but cannot make certain of defeating the enemy.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "One may know how to conquer without being able to do it.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The clever combatant imposes his will on the enemy, but does not allow the enemy’s will to be imposed on him.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "Whoever is first in the field and awaits the coming of the enemy, will be fresh for the fight.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Do not repeat the tactics which have gained you one victory, but let your methods be regulated by the infinite variety of circumstances.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "So in war, the way is to avoid what is strong and to strike at what is weak.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Pretend to be weak, that he may grow arrogant.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "Ponder and deliberate before you make a move.",
+      "vectors": [
+        "version-drift",
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "Let your rapidity be that of the wind, your compactness that of the forest.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The onset of troops is like the rush of a torrent which will even roll stones along in its course.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Thus the highest form of generalship is to balk the enemy’s plans.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Knowledge of the enemy’s dispositions can only be obtained from other men.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Be subtle! be subtle! and use your spies for every kind of business.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "Hostile armies may face each other for years, striving for the victory which is decided in a single day.",
+      "vectors": [
+        "malicious-update",
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "If it is to your advantage, make a forward move; if not, stay where you are.",
+      "vectors": [
+        "version-drift"
+      ]
+    }
+  ],
+  "apocrypha": [
+    {
+      "q": "The squatter waits at the crossroads wearing your friend’s name, one letter missing.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "He who runs bunx on a name he cannot spell has already lost.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The impostor need not be strong. He need only be spelled like your friend after midnight.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "The hyphen you forgot is the door he built.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "Between the true name and the false lies the width of a thumb and the depth of a well.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "The squatter does not attack your strongest package. He imitates your most beloved.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "ui",
+        "http"
+      ]
+    },
+    {
+      "q": "The scope protects the name, not the code.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "When the public registry and the private one share a name, the louder version answers.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "He who names an internal package without a scope leaves its name unguarded at the border.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "The enemy publishes version ninety-nine of your secret library and waits for you to prefer the higher number.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "A postinstall script is a guest who arrives carrying his own key.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "The shortest README hides the longest postinstall.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "A package that must reach the network to install is a soldier who first visits the enemy camp.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "trustedDependencies is the list of those you have permitted to strike first.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "Bun bars the gate to lifecycle scripts. Every name in trustedDependencies is a hole you cut yourself.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "The installer runs before the code is read. So does the thief.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "To pipe a stranger’s script into your shell is to open the gate and close your eyes.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The prebuilt binary downloaded at install is a sealed crate from a ship you never saw dock.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "The maintainer who hands over the keys out of weariness hands over your house as well.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "Trust no maintainer who has not been seen for three winters.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "One maintainer and a million downloads: the whole army sleeps upon a single spear.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "An abandoned package is a fortress with no garrison. The first to arrive holds it.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "He who disables two-factor for convenience saves a minute and spends a year.",
+      "vectors": [
+        "maintainer-takeover",
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The expired domain of a maintainer’s email is a key under the doormat, sold with the house.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "The kind stranger who offers to carry your burden for two years may be the burden.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "A deprecated package is a general who has resigned but still wears the uniform.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "The attack comes not in the version you chose, but in the patch release you accepted while sleeping.",
+      "vectors": [
+        "malicious-update",
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The wise general reads the diff. The foolish general reads the changelog.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "A release published at three in the morning, by a hand never seen before, deserves a candle and a long look.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "Trust is earned over many versions and spent in one.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "When the minified file outweighs the source, ask who else came to the feast.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "Protest written into code harms the innocent first. Read before you upgrade.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "He who pins his versions sleeps. He who writes the caret dreams of other men’s commits.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The lockfile is your map. Without it, the terrain shifts while you march.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "‘latest’ is not a version. It is a prayer.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The caret is a door that opens toward the future. The future does not knock.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "Two machines installing one package.json are two armies hearing one order in different dialects.",
+      "vectors": [
+        "version-drift",
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "The star in your version field swears loyalty to every king who will ever be crowned.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "Freeze the lockfile in CI, or CI will improvise.",
+      "vectors": [
+        "version-drift",
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "The secret in .env is a secret only until the first commit.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "The leaked token does not knock. It publishes.",
+      "vectors": [
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The token in your .npmrc is a signet ring. Wear it; do not mail it.",
+      "vectors": [
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "Git forgets nothing. Deleting the secret in the next commit only teaches the enemy where to dig.",
+      "vectors": [
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The library that loads your secrets must be the most boring one you own.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "A secret printed once in a log is a secret told to every scribe in the empire.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "A fork is a promise kept by no one.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "A dependency fetched from a branch is a bridge whose planks are replaced each night.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "Pin by commit, for a tag can be moved and a branch always is.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "Supplies bought from a wagon by the roadside do not come with the granary’s seal.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "He who audits in peace need not patch in war.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The old version you fear to upgrade is the one the enemy has studied longest.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The advisory is public. The enemy reads the news before you do.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "A known flaw unpatched is not a risk. It is an invitation with a date.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The crack in your wall is already drawn on the enemy’s maps.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "He who controls the build has won the battle before it is fought.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "Your CI runner holds secrets it did not earn. Guard it as you would the general’s tent.",
+      "vectors": [
+        "ci-pipeline",
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The workflow that runs on a stranger’s pull request hands him your quiver.",
+      "vectors": [
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "A cache poisoned in the night is bread poisoned for every soldier at dawn.",
+      "vectors": [
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "Inspect the vendored granary before winter, not during the famine.",
+      "vectors": [
+        "ci-pipeline",
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "A thousand stars cast no light on the code inside.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "Do not fear the quiet package with no stars. Fear the loud one with stolen stars.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "Popularity is a banner. Anyone may carry a banner.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "The repository link in the manifest is a claim, not a proof.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "The dependency you did not choose has already chosen you.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The enemy does not breach the wall. He is invited, as the dependency of a dependency of your linter.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "lint"
+      ]
+    },
+    {
+      "q": "Many small packages make a long border.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "One hundred dependencies, one hundred doors. The enemy needs only one unlatched.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Every require is a bridge you have not inspected.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "When the small pad falls, ten thousand builds go dark.",
+      "vectors": [
+        "attack-surface",
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "The helper you install for a single function brings his whole village.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Prune what you do not use. An unused dependency is a sentry who reports to no one.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The tests pass. So did the wooden horse, through the gate.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "Bun is fast. The attacker is patient.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Speed is Bun’s gift. Haste is the attacker’s.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "The breach is rarely clever. It is merely patient and unwatched.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Know your lockfile and know your registry, and you need not fear a hundred installs.",
+      "vectors": [
+        "general",
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The guard at the gate is the first one the enemy bribes.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "He who writes his own auth library writes the enemy’s victory speech.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "The library that mints your sessions is the mint itself. Guard the mint.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "A token that never expires is a soldier who never returns his sword.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "The lock you did not forge, you must at least inspect.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "Do not trust a cipher whose author you cannot name.",
+      "vectors": [
+        "starjacking"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "Randomness that is not random is a wall made of painted paper.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "A wallet library that phones home has already chosen its master.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "In the land of wallets, every dependency is a pickpocket’s apprentice until proven otherwise.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "The address you copy is the address you trust. The clipboard trusts no one.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "A request library reads every letter you send. Choose the courier carefully.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The client that follows every redirect will one day follow the enemy home.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The server middleware stands at the gate. Know which side it salutes.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "Parse no URL you would not walk to on foot.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The bundler touches every line before your users do. It is the cook in your kitchen.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "The plugin to your bundler is the cook’s assistant. Ask who trained him.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "Dev dependencies do not ship, but they do run. On your machine. With your keys.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "build",
+        "test",
+        "lint"
+      ]
+    },
+    {
+      "q": "The tool you run once runs with all your powers. Once is enough.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The colors in your terminal were a gift. Gifts can be withdrawn.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The logger hears everything. Ensure it repeats nothing.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "A log line that obeys what it writes is a scribe taking orders from the letter.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "The query builder that trusts raw strings opens the gate to whoever speaks in the right tone.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "The driver holds the vault’s address and the vault’s key. Few guards are trusted so much.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "Ten thousand components render faithfully whatever the enemy hands them.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "dangerouslySetInnerHTML was named honestly. Few read the name.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "The script tag you load from a stranger’s CDN is a door to your users, not just to you.",
+      "vectors": [
+        "remote-source"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "The test runner sees your secrets in CI and asks nothing. Give it no reason to talk.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "The headless browser downloads a whole army to fight a single test.",
+      "vectors": [
+        "install-script",
+        "attack-surface"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "Even a package that holds only types can hold an install script.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "The definition promises a shape. It does not promise a friend.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "The native addon speaks the machine’s tongue. You cannot read its letters.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "node-gyp builds in the dark what you will run in daylight.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "The linter reads your whole army on every save. Choose a quiet companion.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "lint"
+      ]
+    },
+    {
+      "q": "The git hook runs before your judgement does.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "lint"
+      ]
+    },
+    {
+      "q": "Hash the password slowly, for the enemy guesses quickly.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "The login page is the most visited gate. Its library should be the most watched.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "He who invents his own cipher has invented only his own defeat.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "A signing key in the repository is a seal carved on the outer wall.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "The algorithm abandoned by the scholars is still welcomed in your package.json.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "The chain remembers every theft forever and returns none of it.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "A seed phrase in an environment variable is treasure buried beneath a signpost.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "web3",
+        "config"
+      ]
+    },
+    {
+      "q": "The websocket stays open long after the courtesy has ended.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The transpiler sees the code you wrote and writes the code you run. Between the two, a stranger may sit.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "The update notifier calls out to the world each time you call on it.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The debug flag left on in production is a lantern hung for the enemy.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "Logs shipped to a stranger’s server are diaries read aloud in the market.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "The migration runs with the highest privilege and the lowest scrutiny.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "The connection string is the vault’s map, key and guard’s name, written on one line.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "database",
+        "config"
+      ]
+    },
+    {
+      "q": "An ORM hides the query from the general, not from the enemy.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "The component library from an unknown hand renders on every screen you own.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "The mock server in your tests listens on a real port.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "The squatter favours @types, for no one reads a declaration.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "Types are documentation that compiles. Malice also compiles.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "@types/ before a name is a uniform, not an allegiance.",
+      "vectors": [
+        "starjacking"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "The binary that runs on every platform was built by someone on every platform. Do you know them all?",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "Configuration is the order of battle. He who changes it commands the army.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "The config loader that executes its files will execute the enemy’s too.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "dotenv reads your secrets faithfully. So will whoever reads dotenv.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "A formatter rewrites every file you own. Grant such power sparingly.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "lint"
+      ]
+    }
+  ]
+}

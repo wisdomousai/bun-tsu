@@ -1,0 +1,50 @@
+{
+  "name": "@wisdomousai/bun-tsu",
+  "version": "0.1.0",
+  "description": "Is your cybersecurity team giving you cryptic requirements that you can't really understand, but they sound really important? Bun Tsu can help you automate this!",
+  "type": "module",
+  "bin": {
+    "bun-tsu": "./src/cli.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./scanner": "./src/scanner.ts",
+    "./preload": "./src/preload.ts"
+  },
+  "files": [
+    "src",
+    "!src/site.html",
+    "README.md"
+  ],
+  "engines": {
+    "bun": ">=1.3.0"
+  },
+  "keywords": [
+    "bun",
+    "security",
+    "supply-chain",
+    "security-scanner",
+    "sun-tzu",
+    "dependencies"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "bun test",
+    "build:site": "bun scripts/build-site.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.0"
+  },
+  "author": "wisdomous.ai <hello@wisdomous.ai> (https://wisdomous.ai)",
+  "homepage": "https://wisdomousai.github.io/bun-tsu/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wisdomousai/bun-tsu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wisdomousai/bun-tsu/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

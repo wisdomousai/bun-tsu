@@ -1,0 +1,2301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bun Tsu: The Art of Dependency</title>
+<meta name="description" content="Is your cybersecurity team giving you cryptic requirements that you can&#39;t really understand, but they sound really important? Bun Tsu can help you automate this!">
+<link rel="canonical" href="https://wisdomousai.github.io/bun-tsu/">
+<meta property="og:title" content="Bun Tsu: The Art of Dependency">
+<meta property="og:description" content="Is your cybersecurity team giving you cryptic requirements that you can&#39;t really understand, but they sound really important? Bun Tsu can help you automate this!">
+<meta property="og:url" content="https://wisdomousai.github.io/bun-tsu/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="wisdomous">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥟</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #e8eeea; --paper-deep: #dbe4de; --ink: #1f2a26; --ink-soft: #4a5a53;
+  --m1: #2b3833; --m2: #6f817a; --m3: #a9b8b1; --mist: #eef3f0;
+  --bun: #ecd5a6; --bun-line: #7a5a2c; --beard: #dfe3df; --petal: #e7a1a6; --petal-2: #f3c9c4;
+  --bamboo: #a87a3c; --bamboo-dark: #6e4f25; --jade: #2f6b57; --seal: #b3372b;
+  --sun: #c9452f; --glow: #f0a184; --stars: 0; --lantern: #ffcf7a;
+  --term-bg: #1a221e; --term-ink: #d9e2dc; --term-dim: #7f8f87;
+  --rule: #c4d0c8; --scroll-paper: #f3efe4; --scroll-ink: #2a2620;
+  --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --sans: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light; box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111916; --paper-deep: #18221e; --ink: #dce5e0; --ink-soft: #9fb0a8;
+    --m1: #070b09; --m2: #26332e; --m3: #3b4a44; --mist: #1d2824;
+    --beard: #c9cfca; --petal: #c77c86; --petal-2: #8f5a63;
+    --bamboo: #d2a766; --bamboo-dark: #e3c08a; --jade: #6dba9c; --seal: #e0584a;
+    --sun: #efe6cf; --glow: #8fa39a; --stars: 1;
+    --term-bg: #0b100e; --rule: #2a3732; --scroll-paper: #e9e3d3; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111916; --paper-deep: #18221e; --ink: #dce5e0; --ink-soft: #9fb0a8;
+  --m1: #070b09; --m2: #26332e; --m3: #3b4a44; --mist: #1d2824;
+  --beard: #c9cfca; --petal: #c77c86; --petal-2: #8f5a63;
+  --bamboo: #d2a766; --bamboo-dark: #e3c08a; --jade: #6dba9c; --seal: #e0584a;
+  --sun: #efe6cf; --glow: #8fa39a; --stars: 1;
+  --term-bg: #0b100e; --rule: #2a3732; --scroll-paper: #e9e3d3; color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); overflow-x: clip; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1.0625rem/1.7 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: var(--jade); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--seal); outline-offset: 3px; border-radius: 2px; }
+code, pre { font-family: var(--mono); }
+.wrap { max-width: 68rem; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+h2 { font: 700 clamp(1.75rem, 4vw, 2.6rem)/1.15 var(--serif); margin: 0 0 .6em; letter-spacing: -0.01em; }
+h3 { font: 700 1.1875rem/1.3 var(--sans); margin: 0 0 .4rem; }
+p { margin: 0 0 1rem; }
+section { padding: clamp(2.5rem, 7vw, 5rem) 0; }
+.lead { color: var(--ink-soft); max-width: 34rem; }
+.m1 { fill: var(--m1); } .m2 { fill: var(--m2); } .m3 { fill: var(--m3); } .mist { fill: var(--mist); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .flutter { transform-box: fill-box; transform-origin: 0 50%; animation: flutter 3.4s ease-in-out infinite alternate; }
+  .flutter.v { transform-origin: 50% 0; animation-name: flutterv; animation-duration: 4.2s; }
+  .drift { transform-box: fill-box; transform-origin: 50% 100%; animation: drift 6s ease-in-out infinite alternate; }
+  @keyframes flutter { from { transform: skewY(-3deg) scaleX(1); } to { transform: skewY(4deg) scaleX(.92); } }
+  @keyframes flutterv { from { transform: skewX(-3deg); } to { transform: skewX(4deg) scaleY(.97); } }
+  @keyframes drift { from { transform: skewX(-7deg); } to { transform: skewX(7deg); } }
+}
+
+/* ---------- Hero ---------- */
+.hero { position: relative; min-height: max(600px, 100svh); display: flex; align-items: flex-end; overflow: hidden; }
+.hero svg.scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sky-top { stop-color: var(--paper); } .sky-bot { stop-color: var(--paper-deep); }
+.stars { opacity: var(--stars); }
+#general { cursor: pointer; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse 48% 42% at 20% 62%, color-mix(in srgb, var(--paper) 88%, transparent), transparent 70%); }
+.hero-copy { position: relative; z-index: 2; padding-bottom: clamp(2.5rem, 8vh, 5rem); width: 100%; pointer-events: none; }
+.hero-copy .inner { max-width: 32rem; pointer-events: auto; }
+.title { position: relative; display: inline-block; margin: 0 0 .1em; }
+.wordmark { font: 800 clamp(3.5rem, 11vw, 7.5rem)/0.92 var(--serif); letter-spacing: -0.025em; margin: 0; color: var(--ink); }
+.swash { position: absolute; left: -2%; bottom: -0.28em; width: 104%; height: .42em; overflow: visible; pointer-events: none; }
+.swash path { fill: none; stroke: var(--seal); stroke-width: 15; stroke-linecap: round; opacity: .9; }
+.title .hanko { position: absolute; right: -2.3em; top: .1em; width: 1.6em; font-size: clamp(1.2rem, 3vw, 2rem); }
+.subtitle { font: 500 clamp(1.1rem, 2.2vw, 1.4rem)/1.3 var(--serif); margin: .9rem 0 1.1rem; color: var(--ink-soft); }
+.lede { font-size: clamp(1.0625rem, 2vw, 1.25rem); line-height: 1.55; margin: 0 0 1.5rem; }
+.cmd { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; font: 500 1.0625rem var(--mono); max-width: 100%; background: color-mix(in srgb, var(--paper) 80%, transparent); backdrop-filter: blur(6px); }
+.cmd code { padding: .7rem 1rem; white-space: nowrap; overflow-x: auto; }
+.cmd code::before { content: "$ "; color: var(--ink-soft); }
+.cmd button { font: 500 .9375rem var(--sans); border: 0; border-left: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); padding: 0 1.1rem; cursor: pointer; min-width: 5.5rem; }
+.cmd button:hover { background: var(--jade); }
+.hint { margin-top: 1.1rem; font-size: .9375rem; color: var(--ink-soft); }
+.hint button { all: unset; cursor: pointer; color: var(--jade); text-decoration: underline; text-underline-offset: 3px; }
+.hint button:focus-visible { outline: 2px solid var(--seal); outline-offset: 3px; }
+.bubble { position: absolute; z-index: 3; max-width: min(19rem, 70vw); padding: .9rem 1.1rem 1rem; background: var(--scroll-paper); color: var(--scroll-ink);
+  border: 2px solid var(--bamboo-dark); border-radius: 4px; font: 500 1.0625rem/1.45 var(--serif); box-shadow: 0 6px 24px rgba(0,0,0,.15); opacity: 0; pointer-events: none; }
+.bubble::after { content: ""; position: absolute; bottom: -10px; right: 2.2rem; border: 10px solid transparent; border-bottom: 0; border-top-color: var(--bamboo-dark); }
+.bubble small { display: block; margin-top: .4rem; font: 400 .8125rem var(--sans); color: #6b6456; }
+
+/* ---------- Brush dividers ---------- */
+.brush-rule { display: block; width: min(68rem, 92vw); height: 28px; margin: 0 auto; overflow: visible; }
+.brush-rule path { fill: none; stroke: var(--m2); stroke-width: 5; stroke-linecap: round; opacity: .55; }
+
+/* ---------- The reading ---------- */
+.reading-grid { display: grid; grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 3.5rem); align-items: center; }
+.scroll { position: relative; padding: 0 22px; margin-bottom: 2.5rem; }
+.rod { position: absolute; top: -14px; bottom: -14px; width: 22px; border-radius: 11px; background: repeating-linear-gradient(180deg, transparent 0 58px, rgba(40, 25, 5, .4) 58px 61px), linear-gradient(90deg, var(--bamboo-dark), var(--bamboo) 45%, var(--bamboo-dark)); z-index: 2; }
+.rod::before, .rod::after { content: ""; position: absolute; left: 50%; width: 30px; height: 12px; margin-left: -15px; border-radius: 6px; background: var(--seal); }
+.rod::before { top: -6px; } .rod::after { bottom: -6px; }
+.rod.l { left: 0; } .rod.r { right: 0; }
+.tassel { position: absolute; bottom: -62px; left: 50%; width: 18px; height: 56px; margin-left: -9px; overflow: visible; }
+.paper { position: relative; background: var(--scroll-paper); color: var(--scroll-ink); padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 2.75rem); box-shadow: inset 0 0 40px rgba(120, 90, 40, .12); min-height: 22rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .26 0 0 0 0 .13 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.paper h3 { font: 700 clamp(1.25rem, 2.6vw, 1.6rem)/1.3 var(--serif); margin: 0 0 1rem; padding-right: 3.5rem; }
+.paper .opening { font: italic 500 1.0625rem/1.6 var(--serif); margin-bottom: 1.25rem; }
+.paper .stamp { position: absolute; right: clamp(1rem, 3vw, 1.75rem); top: clamp(1rem, 3vw, 1.5rem); width: 3.2rem; }
+.verse { display: grid; grid-template-columns: 2.5rem 1fr; gap: .25rem; margin: 0 0 1rem; font: 500 1.0625rem/1.6 var(--serif); }
+.verse b { color: var(--seal); }
+.plain .verse { font-family: var(--sans); font-size: 1rem; }
+.plain .sev { font: 700 .8125rem var(--sans); color: var(--seal); }
+.plain .fix { color: #2d5a48; }
+.closing { margin-top: 1.25rem; font: italic 500 1.0625rem var(--serif); }
+.closing span { font-style: normal; color: #6b6456; font-size: .9375rem; }
+.toggle { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; padding: 3px; margin-top: .5rem; }
+.toggle button { font: 500 .9375rem var(--sans); border: 0; background: transparent; color: var(--ink); padding: .4rem 1rem; border-radius: 999px; cursor: pointer; }
+.toggle button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+/* ---------- The army ---------- */
+.army { background: var(--paper-deep); overflow: hidden; }
+.army-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 3.5rem); align-items: center; }
+.army svg { width: 100%; height: auto; display: block; overflow: visible; }
+.soldier .robe { fill: var(--m1); } .soldier .head { fill: var(--bun); stroke: var(--bun-line); stroke-width: 1.2; }
+.soldier .pleat { stroke: var(--bun-line); stroke-width: 1; fill: none; } .soldier .spear { stroke: var(--m2); stroke-width: 1.5; }
+.soldier .mask { fill: var(--seal); opacity: 0; }
+.tag { font: 700 13px var(--mono); fill: var(--seal); opacity: 0; paint-order: stroke; stroke: var(--paper-deep); stroke-width: 4px; stroke-linejoin: round; }
+.tag.ghost { fill: var(--ink-soft); font-weight: 400; }
+.key { fill: none; stroke: var(--seal); stroke-width: 2.2; opacity: 0; }
+.omens { list-style: none; padding: 0; margin: 0; }
+.omens li { padding: .9rem 0; border-top: 1px solid var(--rule); }
+.omens li:last-child { border-bottom: 1px solid var(--rule); }
+.omens q { display: block; font: 500 1.125rem/1.5 var(--serif); quotes: "\201C" "\201D"; }
+.omens small { display: block; color: var(--ink-soft); font-size: .9375rem; margin-top: .25rem; }
+
+/* ---------- Oracle ---------- */
+.oracle { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 3.5rem); align-items: start; }
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-weight: 700; font-size: .9375rem; margin-bottom: .3rem; }
+.field select { width: 100%; font: 400 1rem var(--sans); color: var(--ink); background: var(--paper); border: 1.5px solid var(--ink-soft); border-radius: 6px; padding: .6rem .7rem; }
+.consult-row { display: flex; align-items: flex-end; gap: .75rem; }
+.consult { flex: 1; font: 700 1.0625rem var(--sans); background: var(--seal); color: #fff; border: 0; border-radius: 6px; padding: .8rem 1.4rem; cursor: pointer; }
+.consult:hover { filter: brightness(1.08); }
+.incense { width: 64px; height: 112px; flex: none; overflow: visible; }
+.saying { position: relative; min-height: 16rem; margin: 0; padding: clamp(1.5rem, 4vw, 2.75rem); padding-right: clamp(5.5rem, 12vw, 8.5rem); background: var(--paper-deep); border-left: 6px solid var(--bamboo); }
+.saying blockquote { margin: 0; font: 500 clamp(1.5rem, 3.4vw, 2.25rem)/1.4 var(--serif); }
+.saying blockquote .w { display: inline-block; }
+.saying figcaption { margin-top: 1rem; color: var(--ink-soft); font-size: .9375rem; }
+.saying .tags { margin-top: .4rem; font-size: .875rem; color: var(--ink-soft); }
+.saying .sealwrap { position: absolute; top: clamp(1rem, 3vw, 1.75rem); right: clamp(1rem, 3vw, 1.75rem); width: clamp(3.75rem, 8vw, 5rem); }
+.saying .sealwrap svg { width: 100%; height: auto; overflow: visible; display: block; }
+.saying-actions { margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+.linkish { font: 500 .9375rem var(--sans); background: none; border: 0; padding: 0; color: var(--jade); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* ---------- Ways & vectors ---------- */
+.ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.25rem, 3vw, 2.5rem); }
+.way svg.icon { width: 64px; height: 64px; margin-bottom: .5rem; overflow: visible; }
+.way p { color: var(--ink-soft); font-size: 1rem; }
+.way pre { background: var(--term-bg); color: var(--term-ink); border-radius: 8px; padding: .85rem 1rem; font-size: .8125rem; line-height: 1.6; overflow-x: auto; margin: 0 0 .75rem; }
+.way pre .d { color: var(--term-dim); }
+.vectors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(1.5rem, 4vw, 3rem); margin: 0; }
+.vectors > div { padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
+.vectors dt button { all: unset; cursor: pointer; font-weight: 700; }
+.vectors dt button:hover { color: var(--jade); }
+.vectors dt button:focus-visible { outline: 2px solid var(--seal); outline-offset: 3px; }
+.vectors dd { margin: .15rem 0 0; color: var(--ink-soft); }
+.vectors dd q { display: block; margin-top: .35rem; font: 500 1.0625rem/1.5 var(--serif); color: var(--ink); quotes: "\201C" "\201D"; }
+
+/* ---------- Footer ---------- */
+footer { position: relative; color: var(--ink-soft); font-size: .9375rem; }
+footer svg.rest { display: block; width: 100%; height: clamp(140px, 22vw, 240px); }
+footer .text { background: var(--m1); color: #c9d3ce; padding: 0 0 3rem; margin-top: -1px; }
+footer .text a { color: #9fd2bc; }
+footer p { max-width: 42rem; margin-bottom: .75rem; }
+
+@media (max-width: 520px) {
+  .cmd { font-size: clamp(.78rem, 3.4vw, 1.0625rem); }
+  .cmd code { padding: .7rem .75rem; }
+  .cmd button { min-width: 4.25rem; padding: 0 .8rem; }
+  .title .hanko { right: -1.9em; }
+}
+@media (max-width: 820px) {
+  .reading-grid, .army-grid, .oracle { grid-template-columns: minmax(0, 1fr); }
+  .ways, .vectors { grid-template-columns: minmax(0, 1fr); }
+  .saying { padding-right: clamp(1.5rem, 4vw, 2.75rem); padding-top: 5.5rem; }
+  .hero { display: block; min-height: 0; }
+  .hero::before { display: none; }
+  .hero svg.scene { position: relative; display: block; height: min(66svh, 540px); }
+  .hero-copy { padding: 1.5rem 0 2.5rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="scene" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky-top"/><stop offset="1" class="sky-bot"/></linearGradient>
+      <radialGradient id="glow"><stop offset="0" stop-color="var(--glow)" stop-opacity=".55"/><stop offset="1" stop-color="var(--glow)" stop-opacity="0"/></radialGradient>
+      <radialGradient id="lanternglow"><stop offset="0" stop-color="var(--lantern)" stop-opacity=".55"/><stop offset="1" stop-color="var(--lantern)" stop-opacity="0"/></radialGradient>
+      <filter id="inkwash" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
+      <filter id="brushedge" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
+      <filter id="soft" x="-50%" y="-300%" width="200%" height="700%"><feGaussianBlur stdDeviation="22"/></filter>
+      <filter id="stampwear" x="-6%" y="-6%" width="112%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -9 6.6" result="holes"/><feComposite in="SourceGraphic" in2="holes" operator="in"/></filter>
+      <path id="petal" d="M0 0 C3 -5 9 -5 10 0 C9 5 3 5 0 0Z"/>
+      <pattern id="lamella" width="6" height="10" patternUnits="userSpaceOnUse"><rect width="6" height="10" fill="var(--m1)"/><path d="M0 4.6H6M0 9.6H6M3 0V4.6M0 4.6V9.6M6 4.6V9.6" stroke="var(--m2)" stroke-width=".7" fill="none"/><path d="M1.2 2.3h1.6M4.2 2.3h1.6M.2 7.3h1.4M3.2 7.3h1.6" stroke="var(--bamboo)" stroke-width=".55" opacity=".55"/></pattern>
+      <pattern id="meander" width="10" height="8" patternUnits="userSpaceOnUse"><path d="M1 7V1H9V5H4.5V3.2H6.6" fill="none" stroke="var(--m2)" stroke-width=".9"/></pattern>
+      <pattern id="fretjade" width="8" height="7" patternUnits="userSpaceOnUse"><path d="M.8 6V.8H7.2V4H3.6V2.6H5.2" fill="none" stroke="var(--jade)" stroke-width=".8"/></pattern>
+      <pattern id="rodpat" width="7" height="12" patternUnits="userSpaceOnUse"><rect width="7" height="12" fill="var(--bamboo)"/><path d="M0 11H7" stroke="var(--bamboo-dark)" stroke-width="1.5"/></pattern>
+      <pattern id="doorstud" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="var(--seal)"/><circle cx="4" cy="4" r="1.4" fill="var(--bamboo)"/></pattern>
+      <path id="xy" d="M0 14C-4 8 2 3 8 6C8 -1 18 -3 21 3C26 0 32 4 30 9C35 10 36 16 31 17H4C1 17 0 16 0 14Z"/>
+      <g id="tower" fill="currentColor"><path fill-rule="evenodd" d="M-12 0V-14H12V0Z M-2 -3V-10Q0 -12 2 -10V-3Z"/><path d="M-19 -15C-12 -14 -9 -17 -8 -20H8C9 -17 12 -14 19 -15C14 -12 -14 -12 -19 -15Z"/><path fill-rule="evenodd" d="M-8 -20V-30H8V-20Z M-2 -22V-28H2V-22Z"/><path d="M-14 -31C-8 -30 -6 -33 -5 -36H5C6 -33 8 -30 14 -31C10 -28 -10 -28 -14 -31Z"/><path d="M-1.2 -36L0 -45L1.2 -36Z"/></g>
+      <g id="gate" fill="currentColor"><path fill-rule="evenodd" d="M-36 0V-18H36V0Z M-7 0V-9A7 7 0 0 1 7 -9V0Z"/><path d="M-36 -21H36" stroke="currentColor" stroke-width="5" stroke-dasharray="5 4" fill="none"/><use href="#tower" transform="translate(0 -18) scale(1.1)"/></g>
+      <g id="tuft" fill="currentColor"><path d="M-1 0L0 -12L1 0Z"/><ellipse cx="0" cy="-12" rx="8" ry="2.6"/><ellipse cx="-2" cy="-16" rx="6" ry="2.2"/><ellipse cx="1" cy="-19.5" rx="4" ry="1.8"/></g>
+      <path id="cun" d="M0 0q5 3 3 9M8 -3q4 4 1 11M-7 4q3 3 2 9M14 5q3 3 1 8" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+      <path id="grass" d="M0 0l-3 -9M2 0l1 -11M4 0l5 -8M-2 0l-6 -6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      <g id="tent" fill="currentColor"><path d="M0 0L9 -13L18 0Z"/><path d="M9 -13V-20" stroke="currentColor" stroke-width="1"/><path d="M9 -20h6l-1.5 2 1.5 2h-6z" fill="var(--seal)"/></g>
+      <g id="crane-shape">
+        <path d="M0 0 C18 -2 38 2 56 0 C64 -1 72 -6 78 -10" stroke="var(--m1)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M10 -2C24 -7 44 -5 58 -1C44 5 24 5 10 -2Z" fill="var(--m1)"/>
+        <path class="wing" d="M32 0C38 -22 52 -34 68 -38C62 -22 56 -10 46 0Z" fill="var(--m1)" opacity=".5"/>
+        <path class="wing" d="M30 0 C36 -28 52 -44 74 -50 C66 -30 58 -14 46 0Z" fill="var(--m1)"/>
+        <path d="M0 0 L-22 4M3 1 L-24 8" stroke="var(--m1)" stroke-width="1.8"/>
+        <path d="M8 -1L-6 -6L-4 -1L-10 2Z" fill="var(--m1)"/>
+        <path d="M80 -11L90 -9" stroke="var(--m1)" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="80" cy="-11" r="3" fill="var(--seal)"/>
+      </g>
+    </defs>
+    <rect width="1200" height="760" fill="url(#sky)"/>
+    <g class="stars" id="stars"></g>
+    <g id="sunwrap"><circle id="halo" cx="800" cy="250" r="190" fill="url(#glow)"/><circle id="sun" cx="800" cy="250" r="96" fill="var(--sun)" filter="url(#brushedge)" opacity=".94"/></g>
+    <g id="clouds" opacity=".5">
+      <use class="m3" href="#xy" transform="translate(760 292) scale(3.4 2)"/>
+      <use class="m3" href="#xy" transform="translate(120 150) scale(2.6 1.6)"/>
+      <use class="m3" href="#xy" transform="translate(470 96) scale(2 1.2)"/>
+      <use class="m3" href="#xy" transform="translate(1010 130) scale(2.4 1.4)"/>
+      <path d="M740 300C780 296 820 298 860 304M110 160C140 156 180 158 214 164" fill="none" stroke="var(--m2)" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
+    </g>
+    <g id="far" filter="url(#inkwash)">
+      <path class="m3" opacity=".42" d="M-20 470V360C0 350 20 300 40 250C50 225 62 225 70 255C82 300 100 330 130 330C150 330 150 300 170 270C182 250 196 254 202 280C214 330 240 380 300 380C360 380 400 340 440 300C452 285 468 285 476 300C500 340 560 370 640 360C700 352 740 300 790 270C805 262 818 262 826 276C850 320 900 360 960 356C1040 350 1100 300 1140 250C1152 236 1166 238 1172 256C1184 290 1200 320 1220 330V700H-20Z"/>
+      <path class="m3" d="M-20 520 C90 430 160 360 250 420 C320 465 380 330 470 345 C560 360 600 440 700 410 C800 380 880 290 990 350 C1080 400 1140 370 1220 360 L1220 780 L-20 780Z"/>
+      <g style="color:var(--m2)" opacity=".34"><use href="#cun" transform="translate(150 428) scale(1.5)"/><use href="#cun" transform="translate(205 396) scale(1.2)"/><use href="#cun" transform="translate(330 438) scale(1.4)"/><use href="#cun" transform="translate(540 404) scale(1.3)"/><use href="#cun" transform="translate(770 408) scale(1.4)"/><use href="#cun" transform="translate(1080 396) scale(1.5)"/><use href="#cun" transform="translate(1150 380) scale(1.1)"/></g>
+      <g style="color:var(--m2)" opacity=".7"><use href="#tuft" transform="translate(120 416) scale(.8)"/><use href="#tuft" transform="translate(140 421) scale(.6)"/><use href="#tuft" transform="translate(600 424) scale(.9)"/><use href="#tuft" transform="translate(618 430) scale(.7)"/><use href="#tuft" transform="translate(1120 378) scale(.9)"/><use href="#tuft" transform="translate(1146 372) scale(.7)"/></g>
+      <g style="color:var(--m2)" opacity=".8">
+        <path d="M250 417C320 462 380 327 470 342" fill="none" stroke="currentColor" stroke-width="4.5"/>
+        <path transform="translate(0 -3.5)" d="M250 417C320 462 380 327 470 342" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 3.2"/>
+        <path d="M470 342C515 350 548 373 581 391" fill="none" stroke="currentColor" stroke-width="4.5"/>
+        <path transform="translate(0 -3.5)" d="M470 342C515 350 548 373 581 391" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 3.2"/>
+        <use href="#tower" transform="translate(470 348) scale(.5)"/>
+        <use href="#tower" transform="translate(374 380) scale(.4)"/>
+        <use href="#tower" transform="translate(311 423) scale(.34)"/>
+        <use href="#tower" transform="translate(869 340) scale(.55)"/>
+      </g>
+      <path class="drift" d="M869 312C860 298 880 290 870 276C860 262 884 254 874 238C868 228 880 222 876 212" fill="none" stroke="var(--m2)" stroke-width="3.4" stroke-linecap="round" opacity=".45"/>
+      <g class="m3" transform="translate(668 404)" style="filter: brightness(.8)">
+        <path d="M-2 0 h24 v-8 h-24z M-6 -8 h32 l-6 -6 h-20z M0 -14 h20 v-6 h-20z M-4 -20 h28 l-6 -6 h-16z M3 -26 h14 v-5 h-14z M0 -31 h20 l-5 -5 h-10z M9 -36 v-7 h2 v7z"/>
+        <path d="M-6 -8q-4 -1 -5 -5M26 -8q4 -1 5 -5M-4 -20q-4 -1 -5 -5M24 -20q4 -1 5 -5M0 -31q-4 -1 -4 -5M20 -31q4 -1 4 -5" fill="none" stroke="var(--m3)" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M8 0v-8h4v8z M8.5 -14v-6h3v6z" fill="var(--m1)" opacity=".6"/>
+      </g>
+    </g>
+    <g id="mistA" filter="url(#soft)" opacity=".85"><ellipse class="mist" cx="260" cy="470" rx="260" ry="34"/><ellipse class="mist" cx="900" cy="440" rx="300" ry="30"/><ellipse class="mist" cx="560" cy="420" rx="230" ry="16"/><ellipse class="mist" cx="1100" cy="400" rx="180" ry="14"/><ellipse class="mist" cx="120" cy="380" rx="170" ry="14"/></g>
+    <g id="mid" filter="url(#inkwash)">
+      <path class="m2" d="M-20 600 C80 540 150 470 230 500 C300 525 340 450 420 470 C510 495 540 560 640 540 C720 525 760 480 830 500 C900 520 960 560 1060 540 C1130 525 1180 540 1220 550 L1220 780 L-20 780Z"/>
+      <g style="color:var(--m1)">
+        <path d="M674 531C722 515 756 492 800 494" fill="none" stroke="currentColor" stroke-width="5" opacity=".5"/>
+        <path transform="translate(0 -4)" d="M674 531C722 515 756 492 800 494" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 3.2" opacity=".5"/>
+        <use href="#gate" transform="translate(804 498) scale(.62)" opacity=".62"/>
+        <g opacity=".5"><use href="#tuft" transform="translate(232 502) scale(1.2)"/><use href="#tuft" transform="translate(252 506) scale(.9)"/><use href="#tuft" transform="translate(420 472) scale(1.3)"/><use href="#tuft" transform="translate(444 476) scale(.9)"/><use href="#tuft" transform="translate(900 516) scale(1.1)"/><use href="#tuft" transform="translate(922 522) scale(.8)"/><use href="#tuft" transform="translate(1096 538) scale(1.2)"/></g>
+      </g>
+      <g style="color:var(--m1)" opacity=".22"><use href="#cun" transform="translate(110 566) scale(1.8)"/><use href="#cun" transform="translate(290 526) scale(1.6)"/><use href="#cun" transform="translate(520 546) scale(1.6)"/><use href="#cun" transform="translate(980 566) scale(1.7)"/><use href="#cun" transform="translate(1140 566) scale(1.5)"/></g>
+    </g>
+    <g id="mistB" filter="url(#soft)" opacity=".8"><ellipse class="mist" cx="600" cy="560" rx="360" ry="30"/><ellipse class="mist" cx="1000" cy="580" rx="200" ry="18"/><ellipse class="mist" cx="160" cy="590" rx="200" ry="18"/></g>
+    <g id="flock">
+      <g class="crane" transform="translate(0 0) scale(1)"><use href="#crane-shape"/></g>
+      <g class="crane" transform="translate(-62 30) scale(.75)"><use href="#crane-shape"/></g>
+      <g class="crane" transform="translate(-54 -26) scale(.7)"><use href="#crane-shape"/></g>
+    </g>
+    <g id="near">
+      <g id="banners">
+        <path d="M700 664V404" stroke="var(--bamboo-dark)" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M700 404l-3.4 -5l3.4 -16l3.4 16z" fill="var(--m2)"/>
+        <path d="M699 410c-8 2 -10 9 -8 17M699 410c-4 4 -5 11 -3 18M701 410c6 3 9 9 7 16" fill="none" stroke="var(--seal)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M700 430H744" stroke="var(--bamboo-dark)" stroke-width="2.4"/>
+        <g class="flutter v"><path d="M704 430H742V494L723 482L704 494Z" fill="var(--seal)"/><path d="M707 434H739V487L723 477L707 487Z" fill="none" stroke="var(--scroll-paper)" stroke-width="1" stroke-dasharray="3 2" opacity=".8"/><text x="723" y="462" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="22" fill="var(--scroll-paper)">兵</text></g>
+        <path d="M1166 640V470" stroke="var(--bamboo-dark)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M1166 470l-3 -4l3 -13l3 13z" fill="var(--m2)"/>
+        <g class="flutter"><path d="M1169 474H1200L1192 483L1200 492H1169Z" fill="var(--seal)"/><text x="1181" y="488" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="11" fill="var(--scroll-paper)">包</text></g>
+      </g>
+      <path class="m1" d="M-20 700 C160 660 340 700 520 680 C640 668 720 640 790 600 C820 560 840 520 870 505 C930 490 1020 492 1070 510 C1110 540 1150 600 1220 610 L1220 780 L-20 780Z"/>
+      <g style="color:var(--m2)" opacity=".5"><use href="#cun" transform="translate(80 716) scale(2)"/><use href="#cun" transform="translate(300 710) scale(2)"/><use href="#cun" transform="translate(520 706) scale(2)"/><use href="#cun" transform="translate(980 540) scale(1.6)"/><use href="#cun" transform="translate(1100 600) scale(1.8)"/><use href="#cun" transform="translate(1170 640) scale(1.6)"/></g>
+      <g style="color:var(--m1)"><use href="#grass" transform="translate(884 499)"/><use href="#grass" transform="translate(902 497) scale(.8)"/><use href="#grass" transform="translate(1054 506)"/><use href="#grass" transform="translate(822 540) scale(.9)"/><use href="#grass" transform="translate(600 676)"/><use href="#grass" transform="translate(240 692) scale(1.1)"/></g>
+      <g id="wardrum">
+        <path d="M1015 505L1021 478M1045 505L1039 478" stroke="var(--bamboo-dark)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="1030" cy="466" r="15" fill="var(--seal)" stroke="var(--bamboo-dark)" stroke-width="2.5"/>
+        <circle cx="1030" cy="466" r="12" fill="none" stroke="var(--bamboo)" stroke-width="2" stroke-dasharray="1.4 3.2"/>
+        <circle cx="1030" cy="466" r="5.5" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".8"/>
+        <path d="M1034 464l4 4M1026 464l-4 4" stroke="var(--bamboo-dark)" stroke-width=".8"/>
+        <path d="M1006 480L1022 468M1054 480L1038 468" stroke="var(--bamboo-dark)" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </g>
+    <g id="pine" filter="url(#inkwash)">
+      <path d="M1072 512 C1078 480 1096 458 1122 446 C1140 437 1156 426 1170 408" stroke="var(--m1)" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M1104 462 C1092 450 1078 446 1062 448 M1140 436 C1150 446 1166 450 1184 448" stroke="var(--m1)" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M1078 496c4 -8 4 -16 10 -22M1096 470c8 -2 12 -6 16 -12M1090 492c6 -2 10 -6 12 -10" stroke="var(--m2)" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".7"/>
+      <g class="needles m1"><ellipse cx="1172" cy="402" rx="40" ry="11"/><ellipse cx="1120" cy="434" rx="34" ry="10"/><ellipse cx="1060" cy="444" rx="26" ry="8"/><ellipse cx="1186" cy="444" rx="24" ry="7"/><ellipse cx="1150" cy="386" rx="22" ry="6"/><ellipse cx="1100" cy="420" rx="16" ry="5"/></g>
+    </g>
+    <g id="general" transform="translate(965 505) scale(1.25)">
+      <rect x="-70" y="-200" width="140" height="205" fill="transparent"/>
+      <g id="steam" fill="none" stroke="var(--m2)" stroke-width="2.2" stroke-linecap="round" opacity=".7">
+        <path d="M-10 -168 c-6 -8 6 -14 0 -22"/><path d="M0 -172 c-6 -8 6 -14 0 -22"/><path d="M10 -168 c-6 -8 6 -14 0 -22"/>
+      </g>
+      <path d="M-60 3C-34 -4 34 -4 60 3L54 9C20 12 -20 12 -54 9Z" fill="var(--m2)"/>
+      <path d="M-48 4l-3 -5M-42 3l-1 -6M46 4l3 -5M40 3l1 -6" stroke="var(--m1)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <g id="backsword">
+        <path d="M26 -112L-48 2" stroke="var(--m2)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M26 -112L-48 2" stroke="var(--m1)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M-44 -4L-48 2" stroke="var(--bamboo)" stroke-width="5.4" stroke-linecap="round"/>
+        <path d="M26 -112L34 -124" stroke="var(--bamboo-dark)" stroke-width="3.6" stroke-linecap="round"/>
+        <path d="M22 -116L30 -108" stroke="var(--bamboo)" stroke-width="3.6" stroke-linecap="round"/>
+        <circle cx="35" cy="-126" r="2.6" fill="var(--seal)"/>
+        <path d="M35 -124C41 -118 39 -108 43 -100M35 -124C38 -116 36 -108 38 -100M35 -124C44 -120 45 -110 49 -104" stroke="var(--seal)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </g>
+      <path d="M-28 -4H-10L-9 3C-9 7 -14 8 -20 8H-30C-32 5 -30 0 -28 -4ZM10 -4H28C30 0 32 5 30 8H20C14 8 9 7 9 3Z" fill="var(--m1)" stroke="var(--m2)" stroke-width=".8"/>
+      <g id="robe">
+        <path d="M-40 0 C-36 -40 -31 -80 -22 -106 L22 -106 C31 -80 36 -40 40 0 Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
+        <path d="M-14 -75C-15 -55 -18 -35 -22 -16M-6 -75C-6 -55 -7 -35 -8 -14M3 -75C3 -55 4 -35 5 -14M11 -75C12 -55 15 -35 19 -15M-26 -70C-28 -50 -31 -35 -34 -17M24 -70C27 -50 31 -35 34 -17" stroke="var(--m2)" stroke-width=".8" fill="none" opacity=".75"/>
+        <path d="M-40 0L-38.6 -15C-20 -12 20 -12 38.6 -15L40 0Z" fill="url(#meander)" opacity=".9"/>
+        <path d="M-36 -4 C-20 -10 20 -10 36 -4" stroke="var(--m2)" stroke-width="1.2" fill="none"/>
+        <path d="M-23 -103C-24 -96 -24 -88 -23.5 -80H23.5C24 -88 24 -96 23 -103C14 -98 -14 -98 -23 -103Z" fill="url(#lamella)" stroke="var(--m2)" stroke-width=".8"/>
+        <circle cx="-14" cy="-92" r="5.2" fill="var(--bamboo)" stroke="var(--m1)" stroke-width="1"/><circle cx="14" cy="-92" r="5.2" fill="var(--bamboo)" stroke="var(--m1)" stroke-width="1"/>
+        <circle cx="-14" cy="-92" r="2.6" fill="none" stroke="var(--m1)" stroke-width=".7"/><circle cx="14" cy="-92" r="2.6" fill="none" stroke="var(--m1)" stroke-width=".7"/>
+        <path d="M-21 -73h6.2v11q-3.1 3 -6.2 0zM-14.4 -73h6.2v11q-3.1 3 -6.2 0zM-7.8 -73h6.2v11q-3.1 3 -6.2 0zM-1.2 -73h6.2v11q-3.1 3 -6.2 0zM5.4 -73h6.2v11q-3.1 3 -6.2 0zM12 -73h6.2v11q-3.1 3 -6.2 0zM18.6 -73h6.2v11q-3.1 3 -6.2 0z" fill="var(--m1)" stroke="var(--m2)" stroke-width=".8"/>
+        <path id="sash-tail" d="M14 -76 C18 -60 14 -48 20 -36" stroke="var(--seal)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <rect x="-23" y="-80" width="46" height="7" rx="2" fill="var(--seal)"/>
+        <path d="M-17 -79v5M-9 -79v5M9 -79v5M17 -79v5" stroke="var(--bamboo)" stroke-width=".7" opacity=".7"/>
+        <rect x="-5.5" y="-82" width="11" height="11" rx="2.4" fill="var(--bamboo)" stroke="var(--m1)" stroke-width="1"/><circle cx="0" cy="-76.5" r="2.6" fill="var(--jade)"/>
+        <path d="M-13 -72V-62" stroke="var(--seal)" stroke-width="1" fill="none"/>
+        <circle cx="-13" cy="-56" r="5" fill="var(--jade)" stroke="var(--m1)" stroke-width=".8"/><circle cx="-13" cy="-56" r="1.7" fill="var(--m1)"/>
+        <path d="M-13 -51V-44M-15.5 -44h5M-14.5 -44l-1 5M-13 -44v6M-11.5 -44l1 5" stroke="var(--seal)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      </g>
+      <path d="M-22 -102 C-52 -94 -64 -64 -56 -46 C-44 -41 -30 -56 -21 -72Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
+      <path d="M-30 -98C-44 -88 -52 -68 -50 -54M-34 -92C-44 -82 -48 -70 -47 -58" stroke="var(--m2)" stroke-width=".8" fill="none" opacity=".8"/>
+      <path d="M-57 -47C-52 -41 -43 -42 -38 -50" stroke="var(--bamboo)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <g id="fan" transform="translate(-50 -46) rotate(-24)">
+        <path d="M0 0L0 9" stroke="var(--bamboo-dark)" stroke-width="2.6" stroke-linecap="round"/>
+        <g fill="var(--scroll-paper)" stroke="var(--bamboo-dark)" stroke-width=".6">
+          <path transform="rotate(-66)" d="M0 0C-4 -9 -4.5 -21 0 -29C4.5 -21 4 -9 0 0Z"/><path transform="rotate(-44)" d="M0 0C-4 -9 -4.5 -23 0 -31C4.5 -23 4 -9 0 0Z"/><path transform="rotate(-22)" d="M0 0C-4 -9 -4.5 -24 0 -33C4.5 -24 4 -9 0 0Z"/><path d="M0 0C-4 -9 -4.5 -25 0 -34C4.5 -25 4 -9 0 0Z"/><path transform="rotate(22)" d="M0 0C-4 -9 -4.5 -24 0 -33C4.5 -24 4 -9 0 0Z"/><path transform="rotate(44)" d="M0 0C-4 -9 -4.5 -23 0 -31C4.5 -23 4 -9 0 0Z"/><path transform="rotate(66)" d="M0 0C-4 -9 -4.5 -21 0 -29C4.5 -21 4 -9 0 0Z"/>
+        </g>
+        <path d="M0 -3V-28M-12 -3L-19 -26M12 -3L19 -26" stroke="var(--bamboo-dark)" stroke-width=".4" fill="none" opacity=".7"/>
+        <circle cx="0" cy="3" r="3.4" fill="var(--bun)" stroke="var(--bun-line)" stroke-width=".8"/>
+        <path d="M0 9C-3 13 -3 17 -2 20M0 9C1 14 1 18 2 21" stroke="var(--seal)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      </g>
+      <g id="arm">
+        <path d="M22 -102 C48 -94 62 -77 60 -63 C52 -57 37 -62 24 -73Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
+        <path d="M27 -97C42 -91 52 -80 56 -68M30 -90C41 -86 48 -78 52 -70" stroke="var(--m2)" stroke-width=".8" fill="none" opacity=".8"/>
+        <path d="M61 -67C58 -58 49 -57 43 -62" stroke="var(--bamboo)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <g transform="translate(56 -70)">
+          <rect x="0" y="-6" width="40" height="12" rx="3" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width="1"/>
+          <path d="M3.5 -6V6M7 -6V6M10.5 -6V6M14 -6V6M17.5 -6V6M21 -6V6M24.5 -6V6M28 -6V6M31.5 -6V6M35 -6V6" stroke="var(--bamboo-dark)" stroke-width=".6" opacity=".8"/>
+          <rect x="8" y="-7.5" width="2.2" height="15" fill="var(--seal)"/><rect x="29" y="-7.5" width="2.2" height="15" fill="var(--seal)"/>
+          <g transform="translate(26 6)" fill="var(--scroll-paper)" stroke="var(--bamboo-dark)" stroke-width=".5">
+            <rect x="0" y="0" width="2.6" height="26"/><rect x="3.1" y="0" width="2.6" height="29"/><rect x="6.2" y="0" width="2.6" height="25"/><rect x="9.3" y="0" width="2.6" height="28"/><rect x="12.4" y="0" width="2.6" height="24"/>
+            <path d="M-.5 8H15.5M-.5 20H15.5" stroke="var(--seal)" stroke-width="1.1" fill="none"/>
+            <path d="M1.3 12v3M4.4 13v3M7.5 11v3M10.6 12v3M13.7 11v3" stroke="var(--scroll-ink)" stroke-width=".8" fill="none"/>
+          </g>
+          <circle cx="1" cy="0" r="4.4" fill="var(--bun)" stroke="var(--bun-line)" stroke-width=".8"/>
+        </g>
+      </g>
+      <path d="M-22 -104C-36 -106 -46 -98 -48 -88C-40 -90 -30 -92 -22 -94ZM-22 -96C-34 -97 -43 -91 -46 -83C-38 -85 -29 -86 -22 -87ZM22 -104C36 -106 46 -98 48 -88C40 -90 30 -92 22 -94ZM22 -96C34 -97 43 -91 46 -83C38 -85 29 -86 22 -87Z" fill="var(--m1)" stroke="var(--bamboo)" stroke-width=".9" stroke-linejoin="round"/>
+      <path d="M-12 -106C-8 -100 8 -100 12 -106" stroke="var(--bamboo)" stroke-width="2.4" fill="none"/>
+      <g id="beard">
+        <path d="M-9 -116 C-12 -98 -5 -84 0 -74 C5 -84 12 -98 9 -116 Z" fill="var(--beard)"/>
+        <path d="M-5 -110C-6 -98 -3 -86 0 -78M5 -110C6 -98 3 -86 0 -78M0 -112V-80M-8 -108C-9 -98 -6 -90 -3 -84M8 -108C9 -98 6 -90 3 -84" stroke="var(--m2)" stroke-width=".6" fill="none" opacity=".6"/>
+      </g>
+      <circle cx="0" cy="-130" r="25" fill="var(--bun)" stroke="var(--bun-line)" stroke-width="1.6"/>
+      <path d="M13 -149C27 -142 28 -118 15 -108C21 -121 21 -138 13 -149Z" fill="var(--bun-line)" opacity=".14"/>
+      <ellipse cx="-9" cy="-143" rx="7" ry="3" fill="var(--paper)" opacity=".35" transform="rotate(-25 -9 -143)"/>
+      <g fill="none" stroke="var(--bun-line)" stroke-width="1.3" stroke-linecap="round">
+        <path d="M0 -153 C-7 -142 -15 -138 -21 -134"/><path d="M0 -153 C-3 -142 -7 -136 -10 -130"/>
+        <path d="M0 -153 C3 -142 7 -136 10 -130"/><path d="M0 -153 C7 -142 15 -138 21 -134"/>
+        <path d="M0 -153C-9 -148 -18 -146 -24 -141M0 -153C9 -148 18 -146 24 -141" stroke-width=".9" opacity=".8"/>
+        <path class="eye" d="M-12 -127 q4 3 8 0"/><path class="eye" d="M4 -127 q4 3 8 0"/>
+        <path d="M-14 -133q5 -3.5 10 -1.2M4 -134.2q5 -2.3 10 1.2" stroke="var(--m1)" stroke-width="1.8"/>
+        <path d="M-12 -116 C-6 -120 -2 -118 0 -116 C2 -118 6 -120 12 -116" stroke="var(--m1)" stroke-width="1.6"/>
+        <path d="M-12 -116C-16 -113 -18 -109 -17.5 -104M12 -116C16 -113 18 -109 17.5 -104" stroke="var(--m1)" stroke-width=".9"/>
+      </g>
+      <path d="M-24.2 -136C-10 -143 10 -143 24.2 -136" stroke="var(--seal)" stroke-width="3.2" fill="none"/>
+      <circle cx="-23" cy="-136" r="3" fill="var(--seal)"/>
+      <path d="M-23 -136C-32 -135 -37 -129 -41 -121M-23 -136C-33 -139 -39 -135 -45 -133" stroke="var(--seal)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="-15" cy="-121" r="3.5" fill="var(--petal)" opacity=".45"/><circle cx="15" cy="-121" r="3.5" fill="var(--petal)" opacity=".45"/>
+      <circle cx="0" cy="-156" r="4.5" fill="var(--bun-line)"/>
+      <path d="M-9 -157.5H9" stroke="var(--bamboo)" stroke-width="2" stroke-linecap="round"/><circle cx="-9.5" cy="-157.5" r="1.4" fill="var(--bamboo)"/><circle cx="9.5" cy="-157.5" r="1.4" fill="var(--bamboo)"/>
+    </g>
+    <g id="petals"></g>
+  </svg>
+  <div class="bubble" id="bubble" role="status"><span id="bubble-q"></span><small id="bubble-src"></small></div>
+  <div class="hero-copy">
+    <div class="wrap"><div class="inner">
+      <div class="title">
+        <h1 class="wordmark" id="wordmark">Bun Tsu</h1>
+        <svg class="swash" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true"><path id="swash" d="M6 26 C60 14 120 30 190 20 C250 12 320 28 394 14"/></svg>
+        <svg class="hanko" id="hanko" viewBox="0 0 80 80" aria-hidden="true"><g filter="url(#stampwear)"><rect x="4" y="4" width="72" height="72" rx="8" fill="var(--seal)" transform="rotate(-6 40 40)"/><rect x="9" y="9" width="62" height="62" rx="5" fill="none" stroke="var(--paper)" stroke-width="1.4" opacity=".7" transform="rotate(-6 40 40)"/><text x="40" y="55" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="44" fill="var(--paper)" transform="rotate(-6 40 40)">包</text></g></svg>
+      </div>
+      <p class="subtitle">The Art of Dependency</p>
+      <p class="lede">Is your cybersecurity team giving you cryptic requirements that you can&rsquo;t really understand, but they sound really important? Bun Tsu can help you automate this!</p>
+      <div class="cmd"><code>bunx @wisdomousai/bun-tsu</code><button type="button" data-copy="bunx @wisdomousai/bun-tsu">Copy</button></div>
+      <p class="hint">It only reads, and never prints your secrets. <button type="button" id="ask">Ask the general for a saying</button></p>
+    </div></div>
+  </div>
+</header>
+
+<svg class="brush-rule" viewBox="0 0 1000 28" preserveAspectRatio="none" aria-hidden="true"><path d="M8 16 C180 6 320 22 500 13 C680 5 820 22 992 11"/><path style="stroke-width:1.4;opacity:.35" transform="translate(0 6)" d="M8 16 C180 6 320 22 500 13 C680 5 820 22 992 11"/><ellipse cx="500" cy="14" rx="3.4" ry="3.4" fill="var(--seal)"/><ellipse cx="478" cy="14" rx="1.6" ry="1.6" fill="var(--m2)"/><ellipse cx="522" cy="14" rx="1.6" ry="1.6" fill="var(--m2)"/></svg>
+
+<main>
+  <section aria-labelledby="reading-h" id="reading">
+    <div class="wrap reading-grid">
+      <div>
+        <h2 id="reading-h">A reading</h2>
+        <p class="lead">He looks at your lockfile, your install scripts, your version ranges, the names of your packages and the files where secrets like to hide. Every omen is grounded in something real.</p>
+        <div class="toggle" role="group" aria-label="Show">
+          <button type="button" aria-pressed="true" data-view="omens">The omens</button>
+          <button type="button" aria-pressed="false" data-view="plain">The plain scroll</button>
+        </div>
+      </div>
+      <div class="scroll" id="scroll">
+        <div class="rod l" aria-hidden="true"><svg class="tassel" viewBox="0 0 18 56"><path d="M9 0 V10" stroke="var(--seal)" stroke-width="2"/><path d="M5 15C5 9 13 9 13 15C13 21 5 21 5 15Z" fill="none" stroke="var(--seal)" stroke-width="1.6"/><path d="M9 10V20" stroke="var(--seal)" stroke-width="1.6"/><circle cx="9" cy="25" r="4" fill="var(--jade)" stroke="var(--bamboo-dark)" stroke-width=".8"/><circle cx="9" cy="25" r="1.4" fill="var(--paper)"/><path d="M5 29 L3 54 M7 29 L6 55 M9 29 V56 M11 29 L12 55 M13 29 L15 54" stroke="var(--seal)" stroke-width="1.6"/><path d="M4 37H14" stroke="var(--bamboo)" stroke-width="2"/></svg></div>
+        <div class="rod r" aria-hidden="true"><svg class="tassel" viewBox="0 0 18 56"><path d="M9 0 V10" stroke="var(--seal)" stroke-width="2"/><path d="M5 15C5 9 13 9 13 15C13 21 5 21 5 15Z" fill="none" stroke="var(--seal)" stroke-width="1.6"/><path d="M9 10V20" stroke="var(--seal)" stroke-width="1.6"/><circle cx="9" cy="25" r="4" fill="var(--jade)" stroke="var(--bamboo-dark)" stroke-width=".8"/><circle cx="9" cy="25" r="1.4" fill="var(--paper)"/><path d="M5 29 L3 54 M7 29 L6 55 M9 29 V56 M11 29 L12 55 M13 29 L15 54" stroke="var(--seal)" stroke-width="1.6"/><path d="M4 37H14" stroke="var(--bamboo)" stroke-width="2"/></svg></div>
+        <div class="paper" id="paper" aria-live="polite">
+          <svg class="stamp" id="paperstamp" viewBox="0 0 80 80" aria-hidden="true"><g filter="url(#stampwear)"><rect x="5" y="5" width="70" height="70" rx="7" fill="none" stroke="var(--seal)" stroke-width="5" transform="rotate(5 40 40)"/><rect x="12" y="12" width="56" height="56" rx="4" fill="none" stroke="var(--seal)" stroke-width="1.2" opacity=".8" transform="rotate(5 40 40)"/><text x="40" y="55" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="40" fill="var(--seal)" transform="rotate(5 40 40)">兵</text></g></svg>
+          <div id="omens">
+            <h3>The Scroll of Bun Tsu, concerning doomed-app</h3>
+            <p class="opening">Your treasury is the target. Every road in your camp leads to it. And the enemy is already inside.</p>
+            <p class="verse"><b>I.</b><span>The stranger who calls himself colrs wears the face of your friend colors, but a letter was lost on the road.</span></p>
+            <p class="verse"><b>II.</b><span>Your general’s seal lies on the tavern table, in the place called .npmrc.</span></p>
+            <p class="verse"><b>III.</b><span>You keep no map of the ground you stand on. When the terrain shifts in the night, you will not know which night it was.</span></p>
+            <p class="closing">“He who runs bunx on a name he cannot spell has already lost.” <span>Bun Tsu</span></p>
+          </div>
+          <div id="plain" class="plain" hidden>
+            <h3>The plain scroll</h3>
+            <p class="verse"><b>I.</b><span><span class="sev">Critical</span> colrs is one letter from colors, and its postinstall script evals code.<br><span class="fix">Remove it, use colors, rotate credentials on machines that installed it.</span></span></p>
+            <p class="verse"><b>II.</b><span><span class="sev">Critical</span> .npmrc contains a literal registry token.<br><span class="fix">Revoke it, reference ${NPM_TOKEN} instead, scrub git history.</span></span></p>
+            <p class="verse"><b>III.</b><span><span class="sev">High</span> No lockfile, so every install may resolve different code.<br><span class="fix">Run bun install, commit bun.lock, use --frozen-lockfile in CI.</span></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="army" aria-labelledby="army-h" id="army">
+    <div class="wrap army-grid">
+      <svg id="armysvg" viewBox="0 0 640 420" role="img" aria-labelledby="army-title">
+        <title id="army-title">Rows of bun soldiers march in behind a banner. Bun Tsu walks the ranks with a lantern and unmasks colrs, an impostor of colors; finds a soldier carrying a key labelled postinstall; and strikes out chalk@5.6.1, who falls.</title>
+        <defs>
+          <radialGradient id="lanternglow2"><stop offset="0" stop-color="var(--lantern)" stop-opacity=".5"/><stop offset="1" stop-color="var(--lantern)" stop-opacity="0"/></radialGradient>
+          <pattern id="arm-lam" width="4" height="6" patternUnits="userSpaceOnUse"><rect width="4" height="6" fill="var(--m1)"/><path d="M0 2.8H4M0 5.8H4M2 0V2.8M0 2.8V5.8M4 2.8V5.8" stroke="var(--m2)" stroke-width=".6" fill="none"/></pattern>
+        </defs>
+        <g id="battlemap" aria-hidden="true" fill="none" stroke="var(--ink-soft)" stroke-width="1.4" stroke-linecap="round" opacity=".17">
+          <path d="M470 40C520 20 600 30 620 70C632 100 600 130 560 126C510 122 450 90 470 40Z"/><path d="M495 55C530 42 585 50 598 76C606 98 584 112 556 108C520 104 480 84 495 55Z"/><path d="M520 68C545 62 574 66 580 82C584 94 568 100 552 98C534 96 512 86 520 68Z"/>
+          <path d="M40 330C70 300 130 296 160 326C182 350 160 392 110 396C60 400 20 366 40 330Z"/><path d="M62 336C84 316 124 314 142 334C154 350 138 376 108 378C76 380 50 360 62 336Z"/><path d="M82 342C96 330 118 330 126 342C132 352 122 362 106 362C90 362 76 354 82 342Z"/>
+          <path d="M-10 250C60 230 90 290 160 270C230 250 250 320 330 310C410 300 440 360 520 350C580 342 610 380 660 370" stroke="var(--jade)" stroke-width="6" opacity=".7"/>
+          <path d="M-10 258C60 238 90 298 160 278C230 258 250 328 330 318C410 308 440 368 520 358C580 350 610 388 660 378M-10 242C60 222 90 282 160 262C230 242 250 312 330 302C410 292 440 352 520 342C580 334 610 372 660 362" stroke-width=".8"/>
+          <path d="M40 396C150 372 290 392 420 360" stroke-dasharray="5 5"/><path d="M420 360l-10 -5M420 360l-9 7"/>
+          <path d="M560 300C520 270 500 240 520 200" stroke-dasharray="5 5"/><path d="M520 200l-6 9M520 200l8 7"/>
+          <path d="M588 176h30v26h-30z M594 182h18v14h-18z M588 176l6 6M618 176l-6 6M588 202l6 -6M618 202l-6 -6"/>
+          <path d="M440 232h14v9h-14zM460 232h14v9h-14zM440 246h14v9h-14zM460 246h14v9h-14z M447 232v-12l10 4l-10 4"/>
+          <path d="M300 40h14v9h-14zM320 40h14v9h-14zM340 40h14v9h-14z M307 40v-12l10 4l-10 4"/>
+        </g>
+        <g id="banner" transform="translate(4 30)">
+          <path d="M0 0 V300" stroke="var(--bamboo-dark)" stroke-width="3"/>
+          <path d="M0 -2l-3.5 -3l3.5 -16l3.5 16z" fill="var(--m2)"/>
+          <path d="M-1 3c-6 2 -9 8 -7 16M-1 3c-3 4 -4 11 -2 17M1 -2c-3 -1 -5 0 -6 3" fill="none" stroke="var(--seal)" stroke-width="1.6" stroke-linecap="round"/>
+          <g id="flag"><path d="M2 4 C22 0 40 8 62 4 L53 26 L62 48 C40 52 22 44 2 48Z" fill="var(--seal)"/><path d="M7 9C22 6 38 12 54 9M7 43C22 46 38 40 54 43" fill="none" stroke="var(--scroll-paper)" stroke-width="1" stroke-dasharray="3 2" opacity=".75"/><path d="M12 49v7M22 50v8M32 49v7M42 48v8M52 46v6" stroke="var(--seal)" stroke-width="1.4" stroke-linecap="round"/><text x="30" y="36" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="26" fill="var(--scroll-paper)">包</text></g>
+          <g class="flutter"><path d="M2 66H40L34 78L40 90H2Z" fill="var(--m1)"/><path d="M5 70H34M5 86H34" stroke="var(--bamboo)" stroke-width=".8" fill="none" opacity=".8"/><text x="18" y="84" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="14" fill="var(--scroll-paper)">兵</text></g>
+          <path d="M-13 292h26l4 12h-34z" fill="var(--m2)"/><path d="M-9 296l3 4M0 295v6M7 296l-2 5" stroke="var(--m1)" stroke-width="1" fill="none"/>
+          <path d="M18 306L22 282M38 306L34 282" stroke="var(--bamboo-dark)" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="28" cy="274" r="14" fill="var(--seal)" stroke="var(--bamboo-dark)" stroke-width="2.4"/><circle cx="28" cy="274" r="11" fill="none" stroke="var(--bamboo)" stroke-width="1.8" stroke-dasharray="1.3 3"/><circle cx="28" cy="274" r="5" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".8"/>
+        </g>
+        <g id="ranks"></g>
+        <g id="inspector" transform="translate(-60 392)">
+          <circle id="lantern-light" cx="26" cy="-22" r="70" fill="url(#lanternglow2)"/>
+          <path d="M-9 0h8v3h-9zM1 0h8v3h-8z" fill="var(--m2)"/>
+          <path d="M-14 0 C-12 -14 -10 -24 -7 -30 L7 -30 C10 -24 12 -14 14 0Z" fill="var(--m1)"/>
+          <path d="M-14 0L-13.2 -5C-5 -3 5 -3 13.2 -5L14 0Z" fill="url(#meander)"/>
+          <path d="M-6 -22L-8 -4M0 -22V-3M6 -22L8 -4" stroke="var(--m2)" stroke-width=".6" fill="none"/>
+          <rect x="-8" y="-24" width="16" height="3" fill="var(--seal)"/>
+          <path d="M-8 -21V-16" stroke="var(--seal)" stroke-width=".7"/><circle cx="-8" cy="-13" r="2" fill="var(--jade)"/>
+          <g transform="translate(-12 -16) rotate(-70)"><rect x="-8" y="-2" width="16" height="4" rx="1" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".6"/><path d="M-4 -2v4M0 -2v4M4 -2v4" stroke="var(--bamboo-dark)" stroke-width=".5"/></g>
+          <path d="M7 -26 L24 -30" stroke="var(--m1)" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="24" cy="-30" r="2.4" fill="var(--bun)"/>
+          <path d="M24 -30 V-38" stroke="var(--bamboo-dark)" stroke-width="1.5"/>
+          <g id="lantern"><rect x="19" y="-41" width="10" height="3" rx="1" fill="var(--bamboo-dark)"/><rect x="18" y="-38" width="12" height="15" rx="5" fill="var(--seal)"/><rect x="20" y="-36" width="8" height="11" rx="3" fill="var(--lantern)" opacity=".85"/><path d="M20 -32h8M20 -28h8" stroke="var(--seal)" stroke-width=".8"/><path d="M24 -23v5M22.5 -18h3" stroke="var(--seal)" stroke-width="1" stroke-linecap="round"/></g>
+          <circle cx="0" cy="-40" r="11" fill="var(--bun)" stroke="var(--bun-line)" stroke-width="1.2"/>
+          <path d="M0 -51 C-3 -46 -7 -44 -10 -42 M0 -51 C3 -46 7 -44 10 -42" stroke="var(--bun-line)" stroke-width="1" fill="none"/>
+          <path d="M-10.4 -44C-4 -47 4 -47 10.4 -44" stroke="var(--seal)" stroke-width="1.5" fill="none"/>
+          <circle cx="0" cy="-53" r="2.5" fill="var(--bun-line)"/>
+          <path d="M-4 -33 C-5 -26 -2 -22 0 -19 C2 -22 5 -26 4 -33Z" fill="var(--beard)"/>
+        </g>
+      </svg>
+      <div>
+        <h2 id="army-h">Your army</h2>
+        <p class="lead">You declared fourteen packages. They brought three hundred friends. Bun Tsu walks the ranks with a lantern.</p>
+        <ul class="omens">
+          <li class="omen"><q>The squatter waits at the crossroads wearing your friend’s name, one letter missing.</q><small>Typosquats: names one edit from a popular package.</small></li>
+          <li class="omen"><q>A postinstall script is a guest who arrives carrying his own key.</q><small>Install scripts that fetch or eval code, and your trustedDependencies.</small></li>
+          <li class="omen"><q>The one who came to you as chalk@5.6.1 wears stolen armour.</q><small>Exact versions from documented compromises stop the install outright.</small></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <svg class="brush-rule" viewBox="0 0 1000 28" preserveAspectRatio="none" aria-hidden="true"><path d="M10 12 C200 22 340 6 520 15 C700 24 840 8 990 17"/><path style="stroke-width:1.4;opacity:.35" transform="translate(0 6)" d="M10 12 C200 22 340 6 520 15 C700 24 840 8 990 17"/><ellipse cx="500" cy="14" rx="3.4" ry="3.4" fill="var(--seal)"/><ellipse cx="478" cy="14" rx="1.6" ry="1.6" fill="var(--m2)"/><ellipse cx="522" cy="14" rx="1.6" ry="1.6" fill="var(--m2)"/></svg>
+
+  <section aria-labelledby="oracle-h" id="oracle">
+    <div class="wrap oracle">
+      <div>
+        <h2 id="oracle-h">Consult the oracle</h2>
+        <p class="lead">Ask for a saying about a particular danger, a particular kind of package, or both. 168 sayings, 33 of them Sun Tzu’s own.</p>
+        <div class="field"><label for="vec">Attack vector</label><select id="vec"><option value="">Any danger</option></select></div>
+        <div class="field"><label for="typ">Package type</label><select id="typ"><option value="">Any package</option></select></div>
+        <div class="consult-row">
+          <button type="button" class="consult" id="consult">Consult Bun Tsu</button>
+          <svg class="incense" viewBox="0 0 52 92" aria-hidden="true">
+            <g id="smoke" fill="none" stroke="var(--ink-soft)" stroke-width="1.8" stroke-linecap="round" opacity=".85">
+              <path class="wisp" d="M26 52 C20 44 32 38 26 30 C20 22 32 16 26 6"/>
+              <path class="wisp" d="M26 52 C32 44 20 38 26 30 C32 22 20 16 26 6"/>
+            </g>
+            <path d="M26 52 V70" stroke="var(--bamboo-dark)" stroke-width="2"/>
+            <path d="M19 59 L17.5 71M33 57 L34.5 71" stroke="var(--bamboo-dark)" stroke-width="1.4"/>
+            <circle cx="19" cy="59" r="1.1" fill="var(--seal)" opacity=".8"/><circle cx="33" cy="57" r="1.1" fill="var(--seal)" opacity=".8"/>
+            <circle id="ember" cx="26" cy="52" r="2.2" fill="var(--seal)"/>
+            <path d="M12 71 C16 66 36 66 40 71Z" fill="var(--m2)"/>
+            <path d="M12 72 V62 H16.5 V72 M40 72 V62 H35.5 V72" fill="none" stroke="var(--bamboo-dark)" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M7 72 H45 C45 80 40 85 34 86 H18 C12 85 7 80 7 72Z" fill="var(--m1)"/>
+            <path d="M9 76.5 H43 V82 H9Z" fill="url(#fretjade)"/>
+            <path d="M18 86 L14.5 91.5 M34 86 L37.5 91.5 M26 86 V91.5" stroke="var(--bamboo-dark)" stroke-width="3.2" stroke-linecap="round"/>
+            <circle cx="14" cy="82" r="1.9" fill="var(--bamboo)"/><circle cx="38" cy="82" r="1.9" fill="var(--bamboo)"/>
+            <path d="M4 70 h44 v4 h-44z" fill="var(--bamboo-dark)"/><path d="M6 72h40" stroke="var(--bamboo)" stroke-width=".7" stroke-dasharray="1.5 2.5"/>
+          </svg>
+        </div>
+      </div>
+      <figure class="saying" aria-live="polite">
+        <div class="sealwrap">
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <g id="burst" fill="var(--seal)"></g>
+            <g id="seal" filter="url(#stampwear)"><rect x="4" y="4" width="72" height="72" rx="8" fill="none" stroke="var(--seal)" stroke-width="5" transform="rotate(-6 40 40)"/><rect x="11" y="11" width="58" height="58" rx="5" fill="none" stroke="var(--seal)" stroke-width="1.2" opacity=".8" transform="rotate(-6 40 40)"/>
+            <text x="40" y="54" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="42" fill="var(--seal)" transform="rotate(-6 40 40)">包</text></g>
+          </svg>
+        </div>
+        <blockquote id="q">The dependency you did not choose has already chosen you.</blockquote>
+        <figcaption id="src">Bun Tsu, The Art of Dependency</figcaption>
+        <div class="tags" id="tags"></div>
+        <div class="saying-actions">
+          <button type="button" class="linkish" id="copyq">Copy saying</button>
+          <button type="button" class="linkish" id="cliq">Copy as command</button>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="ways-h" id="ways">
+    <div class="wrap">
+      <h2 id="ways-h">Usage</h2>
+      <div class="ways">
+        <div class="way" data-icon="scroll">
+          <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
+            <rect class="sheet" x="12" y="16" width="40" height="32" rx="2" fill="var(--scroll-paper)" stroke="var(--bamboo-dark)" stroke-width="2"/>
+            <path d="M18 17v30M24 17v30M30 17v30M36 17v30M42 17v30M48 17v30" stroke="var(--bamboo-dark)" stroke-width=".8" opacity=".45"/>
+            <path d="M12 22H52M12 42H52" stroke="var(--seal)" stroke-width="1.4"/>
+            <g class="lines" stroke="var(--ink-soft)" stroke-width="2"><path d="M19 26h26"/><path d="M19 32h22"/><path d="M19 38h16"/></g>
+            <path d="M32 48V55M30 55h4l-1 6h-2z" stroke="var(--seal)" stroke-width="1.2" fill="var(--seal)"/>
+            <rect class="rodL" x="7" y="12" width="7" height="40" rx="3.5" fill="url(#rodpat)" stroke="var(--bamboo-dark)" stroke-width="1"/><rect class="rodR" x="50" y="12" width="7" height="40" rx="3.5" fill="url(#rodpat)" stroke="var(--bamboo-dark)" stroke-width="1"/>
+          </svg>
+          <h3>Ask for a prophecy</h3>
+          <p>Reads the project you are in and prints the scroll, then the plain translation.</p>
+<pre>bunx @wisdomousai/bun-tsu
+bunx @wisdomousai/bun-tsu --audit
+bunx @wisdomousai/bun-tsu --strict  <span class="d"># fail CI</span></pre>
+        </div>
+        <div class="way" data-icon="gate">
+          <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M2 20 C14 19 24 15 32 6 C40 15 50 19 62 20" fill="none" stroke="var(--seal)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M14 18l3 -4M22 14l2.5 -4M50 18l-3 -4M42 14l-2.5 -4" stroke="var(--seal)" stroke-width="1.4" stroke-linecap="round"/>
+            <circle cx="32" cy="4.5" r="2" fill="var(--bamboo-dark)"/>
+            <path d="M10 20 h44" stroke="var(--bamboo-dark)" stroke-width="3"/>
+            <path d="M18 20v-2.5h5V20M41 20v-2.5h5V20M28 20v-2.5h8V20" fill="none" stroke="var(--bamboo-dark)" stroke-width="1.4"/>
+            <path d="M0 58V46H10M64 58V46H54" fill="none" stroke="var(--ink-soft)" stroke-width="3"/>
+            <rect x="12" y="20" width="4" height="38" fill="var(--ink)"/><rect x="48" y="20" width="4" height="38" fill="var(--ink)"/>
+            <rect class="doorL" x="16" y="26" width="16" height="32" fill="url(#doorstud)" opacity=".85"/><rect class="doorR" x="32" y="26" width="16" height="32" fill="url(#doorstud)"/>
+            <g class="guard" opacity="0"><circle cx="32" cy="38" r="5" fill="var(--bun)" stroke="var(--bun-line)"/><path d="M26 58 C27 50 29 46 32 45 C35 46 37 50 38 58Z" fill="var(--m1)"/><path d="M27 36C27 31 37 31 37 36Z" fill="var(--m2)"/><path d="M32 31v-3" stroke="var(--seal)" stroke-width="1.6" stroke-linecap="round"/><path d="M41 58V30" stroke="var(--bamboo-dark)" stroke-width="1.4"/><path d="M41 27.5l-1.8 4h3.6z" fill="var(--m2)"/></g>
+            <rect x="8" y="58" width="48" height="4" fill="var(--m2)"/>
+          </svg>
+          <h3>Post him at the gate</h3>
+          <p>Bun’s security scanner hook runs him before every <code>bun install</code>. He stops documented compromised versions and questions look-alike names.</p>
+<pre>bun add -d @wisdomousai/bun-tsu
+bunx bun-tsu init
+<span class="d"># bunfig.toml</span>
+[install.security]
+scanner = "@wisdomousai/bun-tsu"</pre>
+        </div>
+        <div class="way" data-icon="bun">
+          <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
+            <g class="puffs" fill="none" stroke="var(--ink-soft)" stroke-width="1.8" stroke-linecap="round"><path d="M24 18c-3-3 3-5 0-8"/><path d="M32 16c-3-3 3-5 0-8"/><path d="M40 18c-3-3 3-5 0-8"/></g>
+            <g class="bunbody"><circle cx="32" cy="38" r="17" fill="var(--bun)" stroke="var(--bun-line)" stroke-width="2"/>
+            <path d="M32 21c-3 5-8 7-12 8M32 21c3 5 8 7 12 8M32 21v9" fill="none" stroke="var(--bun-line)" stroke-width="1.6"/>
+            <path d="M32 21c-5 3-12 3-16 8M32 21c5 3 12 3 16 8" fill="none" stroke="var(--bun-line)" stroke-width="1" opacity=".7"/>
+            <path d="M21 33c1 -3 4 -6 8 -7" fill="none" stroke="var(--paper)" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
+            <path class="e" d="M25 40 q3 2 6 0 M33 40 q3 2 6 0" stroke="var(--bun-line)" stroke-width="1.6" fill="none"/></g>
+            <path d="M9 50H55L51 60H13Z" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M16 51l1.4 8M23 51l.7 8M30 51v8M37 51l-.7 8M44 51l-1.4 8" stroke="var(--bamboo-dark)" stroke-width=".9" opacity=".7"/>
+            <path d="M7 50H57" stroke="var(--bamboo-dark)" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <h3>Hear a saying a day</h3>
+          <p>A preload prints one saying, once a day, when you run something interactively. Silent in CI and pipes.</p>
+<pre>bun add -d @wisdomousai/bun-tsu
+bunx bun-tsu init --preload
+<span class="d"># bunfig.toml</span>
+preload = ["@wisdomousai/bun-tsu/preload"]</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <svg class="brush-rule" viewBox="0 0 1000 28" preserveAspectRatio="none" aria-hidden="true"><path d="M6 14 C160 20 360 8 520 14 C700 20 860 6 994 13"/><path style="stroke-width:1.4;opacity:.35" transform="translate(0 6)" d="M6 14 C160 20 360 8 520 14 C700 20 860 6 994 13"/><ellipse cx="500" cy="14" rx="3.4" ry="3.4" fill="var(--seal)"/><ellipse cx="478" cy="14" rx="1.6" ry="1.6" fill="var(--m2)"/><ellipse cx="522" cy="14" rx="1.6" ry="1.6" fill="var(--m2)"/></svg>
+
+  <section aria-labelledby="vec-h" id="watch">
+    <div class="wrap">
+      <h2 id="vec-h">What he watches for</h2>
+      <p class="lead">Twelve ways a project is breached, as the scroll tells them. Select one to consult the oracle about it.</p>
+      <dl class="vectors" id="vectors"></dl>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <svg class="rest" viewBox="0 0 1200 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <circle id="moon" cx="980" cy="70" r="30" fill="var(--sun)" opacity=".5"/>
+    <use class="m3" href="#xy" transform="translate(944 74) scale(2.8 1.3)" opacity=".5"/>
+    <path d="M920 60C960 56 1000 58 1040 64" fill="none" stroke="var(--m2)" stroke-width="1" stroke-linecap="round" opacity=".5"/>
+    <path class="m3" d="M-10 180 C120 130 200 120 300 150 C380 172 460 120 560 128 C660 136 720 170 820 160 C920 150 1020 120 1210 150 V250 H-10Z" opacity=".6"/>
+    <g style="color:var(--m2)" opacity=".75">
+      <use href="#tower" transform="translate(560 130) scale(.55)"/>
+      <path d="M470 150C500 134 530 126 556 128" fill="none" stroke="currentColor" stroke-width="3.4"/>
+      <path transform="translate(0 -2.6)" d="M470 150C500 134 530 126 556 128" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="2.5 2.8"/>
+      <use href="#tent" transform="translate(770 166)"/><use href="#tent" transform="translate(796 164) scale(.8)"/><use href="#tent" transform="translate(818 165)"/><use href="#tent" transform="translate(846 162) scale(.85)"/><use href="#tent" transform="translate(872 160)"/>
+      <use href="#tuft" transform="translate(120 142) scale(.9)"/><use href="#tuft" transform="translate(140 146) scale(.7)"/><use href="#tuft" transform="translate(1100 134) scale(.9)"/>
+    </g>
+    <circle cx="840" cy="168" r="22" fill="url(#lanternglow)"/><circle cx="840" cy="168" r="1.8" fill="var(--seal)"/>
+    <g filter="url(#soft)" opacity=".7"><ellipse class="mist" cx="400" cy="178" rx="300" ry="9"/><ellipse class="mist" cx="900" cy="192" rx="260" ry="8"/></g>
+    <path class="m2" d="M-10 210 C140 180 260 200 380 190 C520 178 600 200 720 196 C860 192 980 176 1210 196 V250 H-10Z"/>
+    <g style="color:var(--m1)" opacity=".55"><use href="#tuft" transform="translate(150 188)"/><use href="#tuft" transform="translate(172 192) scale(.8)"/><use href="#tuft" transform="translate(690 196) scale(1.1)"/><use href="#tuft" transform="translate(930 183)"/><use href="#tuft" transform="translate(1110 186) scale(1.1)"/></g>
+    <path class="m1" d="M-10 226 C200 214 420 230 600 224 C820 216 1000 228 1210 220 V250 H-10Z"/>
+    <g id="camplight" transform="translate(110 0)">
+      <circle cx="500" cy="200" r="46" fill="url(#lanternglow)"/>
+      <path d="M500 230V206" stroke="var(--bamboo-dark)" stroke-width="2"/>
+      <rect x="494" y="188" width="12" height="3" rx="1" fill="var(--bamboo-dark)"/><rect x="493" y="191" width="14" height="16" rx="5.5" fill="var(--seal)"/><rect x="495.5" y="193" width="9" height="12" rx="3.5" fill="var(--lantern)" opacity=".85"/><path d="M495 197h10M495 201h10" stroke="var(--seal)" stroke-width=".8"/><path d="M500 207v5" stroke="var(--seal)" stroke-width="1.2"/>
+    </g>
+    <g id="sleeper" transform="translate(400 203) scale(1.6)">
+      <path d="M-66 12C-30 8 50 8 84 12L88 17C50 21 -30 21 -70 17Z" fill="var(--bamboo)" opacity=".6"/>
+      <path d="M-62 14.5H82M-66 17H84" stroke="var(--bamboo-dark)" stroke-width=".6" stroke-dasharray="2 2.5" fill="none" opacity=".8"/>
+      <path d="M-50 12 C-46 -6 -20 -14 10 -12 C40 -10 58 0 60 12Z" fill="var(--m1)"/>
+      <path d="M-30 -8C-28 0 -26 6 -26 11M-6 -12C-5 -4 -4 4 -4 11M20 -11C22 -4 24 3 25 11M44 -4C46 2 47 7 48 11" stroke="var(--m2)" stroke-width=".8" fill="none"/>
+      <path d="M-49 12L-48 8C-20 4 30 4 59 8L60 12Z" fill="url(#meander)"/>
+      <path d="M-30 -8 C-26 -26 -8 -34 12 -32 C30 -30 40 -20 42 -10 C20 -6 -10 -6 -30 -8Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
+      <path d="M-14 -26C-12 -20 -10 -14 -9 -8M2 -30C4 -22 6 -14 7 -8M18 -29C20 -22 22 -16 23 -10M32 -24C34 -19 35 -14 36 -10" stroke="var(--m2)" stroke-width=".9" fill="none" opacity=".9"/>
+      <rect x="-6" y="-20" width="30" height="4" rx="1.5" fill="var(--seal)"/>
+      <path d="M-54 -4C-48 -7 -22 -7 -16 -4L-18 4H-52Z" fill="var(--bamboo-dark)"/><path d="M-50 -1H-20" stroke="var(--bamboo)" stroke-width=".8" opacity=".8"/>
+      <circle cx="-34" cy="-22" r="15" fill="var(--bun)" stroke="var(--bun-line)" stroke-width="1.4"/>
+      <path d="M-48 -26 C-42 -28 -38 -32 -36 -37 M-48 -26 C-42 -22 -40 -20 -38 -16 M-48 -26 H-40" stroke="var(--bun-line)" stroke-width="1" fill="none"/>
+      <circle cx="-50" cy="-26" r="3" fill="var(--bun-line)"/>
+      <path d="M-34 -22 q3 2 6 0 M-26 -22 q3 2 6 0" stroke="var(--bun-line)" stroke-width="1.2" fill="none" transform="translate(-6 0)"/>
+      <path d="M-28 -12 C-22 -4 -14 -2 -8 -4" stroke="var(--beard)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M-30 15H58" stroke="var(--m2)" stroke-width="3.2" stroke-linecap="round"/><path d="M-30 15H58" stroke="var(--m1)" stroke-width="1.6"/><path d="M-8 15h3M20 15h3M50 15h3" stroke="var(--bamboo)" stroke-width="3.4"/>
+      <path d="M-30 15H-42" stroke="var(--bamboo-dark)" stroke-width="3.4" stroke-linecap="round"/><circle cx="-43" cy="15" r="2.2" fill="var(--seal)"/><path d="M-44 16q-5 3 -8 9" stroke="var(--seal)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <g transform="translate(66 5)"><rect width="22" height="8" rx="2.5" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".8"/><path d="M3.5 0V8M7 0V8M10.5 0V8M14 0V8M17.5 0V8" stroke="var(--bamboo-dark)" stroke-width=".5"/><rect x="5" y="-1" width="1.6" height="10" fill="var(--seal)"/><rect x="15" y="-1" width="1.6" height="10" fill="var(--seal)"/></g>
+      <g id="zzz" font-family="Shippori Mincho, serif" font-weight="700" fill="var(--ink-soft)"><text x="-28" y="-44" font-size="14">z</text><text x="-18" y="-58" font-size="18">z</text><text x="-4" y="-76" font-size="22">z</text></g>
+    </g>
+  </svg>
+  <div class="text">
+    <div class="wrap">
+      <p>The general rests. Your lockfile does not.</p>
+      <p>Bun Tsu is a joke with a real scanner inside. The known-compromise list is a small, hand-checked sample, not a threat feed; pair it with maintained security tooling. Sun Tzu lines are from Lionel Giles’ 1910 translation, in the public domain. Everything else is apocrypha.</p>
+      <p>A <a href="https://wisdomous.ai/vibecoding">wisdomous vibecoding</a> project. <a href="https://github.com/wisdomousai/bun-tsu">Source on GitHub</a>. MIT licensed.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script id="scrolldata" type="application/json">{
+  "vectors": {
+    "typosquat": "A package named to be mistaken for a popular one",
+    "dependency-confusion": "A public package hijacking the name of a private/internal one",
+    "install-script": "Code that runs on install (pre/post/install scripts, trustedDependencies, curl | sh)",
+    "maintainer-takeover": "Abandoned, deprecated or hijacked packages and maintainer accounts",
+    "malicious-update": "A trusted package shipping a poisoned new release",
+    "version-drift": "No lockfile, loose ranges, '*' or 'latest'",
+    "leaked-secrets": "Tokens and .env files exposed in the repo",
+    "remote-source": "Dependencies pulled from git branches or URLs instead of the registry",
+    "known-vuln": "Published advisories left unpatched",
+    "ci-pipeline": "Build systems, CI runners and caches",
+    "starjacking": "Fake popularity: borrowed stars, inflated downloads",
+    "attack-surface": "Sheer number and sprawl of dependencies",
+    "general": "Timeless strategy"
+  },
+  "types": {
+    "auth": "Login, sessions, JWT, password hashing",
+    "crypto": "Ciphers, hashing, signing, randomness",
+    "web3": "Wallets and blockchain clients",
+    "http": "Servers, clients, sockets, proxies",
+    "build": "Bundlers, compilers, transpilers, CSS tooling",
+    "cli": "Terminal tools, prompts, colors",
+    "logging": "Loggers and debug output",
+    "database": "ORMs, drivers, query builders",
+    "ui": "Frontend frameworks and components",
+    "test": "Test runners, mocks, browser automation",
+    "types": "@types packages",
+    "native": "Native addons and compiled binaries",
+    "config": "Env and configuration loaders",
+    "lint": "Linters, formatters, git hooks"
+  },
+  "classic": [
+    {
+      "q": "All warfare is based on deception.",
+      "vectors": [
+        "typosquat",
+        "starjacking"
+      ]
+    },
+    {
+      "q": "The supreme art of war is to subdue the enemy without fighting.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "If you know the enemy and know yourself, you need not fear the result of a hundred battles.",
+      "vectors": [
+        "general",
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Let your plans be dark and impenetrable as night, and when you move, fall like a thunderbolt.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "Attack him where he is unprepared, appear where you are not expected.",
+      "vectors": [
+        "known-vuln",
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The art of war teaches us to rely not on the likelihood of the enemy’s not coming, but on our own readiness to receive him.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "To secure ourselves against defeat lies in our own hands, but the opportunity of defeating the enemy is provided by the enemy himself.",
+      "vectors": [
+        "leaked-secrets",
+        "general"
+      ]
+    },
+    {
+      "q": "Rapidity is the essence of war: take advantage of the enemy’s unreadiness, make your way by unexpected routes, and attack unguarded spots.",
+      "vectors": [
+        "install-script",
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "Hold out baits to entice the enemy. Feign disorder, and crush him.",
+      "vectors": [
+        "typosquat",
+        "starjacking"
+      ]
+    },
+    {
+      "q": "He will win who knows when to fight and when not to fight.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "There is no instance of a country having benefited from prolonged warfare.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Water shapes its course according to the nature of the ground over which it flows.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "O divine art of subtlety and secrecy! Through you we learn to be invisible, through you inaudible.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "The victorious strategist only seeks battle after the victory has been won.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Thus, what is of supreme importance in war is to attack the enemy’s strategy.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "In war, then, let your great object be victory, not lengthy campaigns.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "If you know neither the enemy nor yourself, you will succumb in every battle.",
+      "vectors": [
+        "version-drift",
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "If you know yourself but not the enemy, for every victory gained you will also suffer a defeat.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "The good fighter is able to secure himself against defeat, but cannot make certain of defeating the enemy.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "One may know how to conquer without being able to do it.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The clever combatant imposes his will on the enemy, but does not allow the enemy’s will to be imposed on him.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "Whoever is first in the field and awaits the coming of the enemy, will be fresh for the fight.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Do not repeat the tactics which have gained you one victory, but let your methods be regulated by the infinite variety of circumstances.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "So in war, the way is to avoid what is strong and to strike at what is weak.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Pretend to be weak, that he may grow arrogant.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "Ponder and deliberate before you make a move.",
+      "vectors": [
+        "version-drift",
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "Let your rapidity be that of the wind, your compactness that of the forest.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The onset of troops is like the rush of a torrent which will even roll stones along in its course.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Thus the highest form of generalship is to balk the enemy’s plans.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Knowledge of the enemy’s dispositions can only be obtained from other men.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "Be subtle! be subtle! and use your spies for every kind of business.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "Hostile armies may face each other for years, striving for the victory which is decided in a single day.",
+      "vectors": [
+        "malicious-update",
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "If it is to your advantage, make a forward move; if not, stay where you are.",
+      "vectors": [
+        "version-drift"
+      ]
+    }
+  ],
+  "apocrypha": [
+    {
+      "q": "The squatter waits at the crossroads wearing your friend’s name, one letter missing.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "He who runs bunx on a name he cannot spell has already lost.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The impostor need not be strong. He need only be spelled like your friend after midnight.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "The hyphen you forgot is the door he built.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "Between the true name and the false lies the width of a thumb and the depth of a well.",
+      "vectors": [
+        "typosquat"
+      ]
+    },
+    {
+      "q": "The squatter does not attack your strongest package. He imitates your most beloved.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "ui",
+        "http"
+      ]
+    },
+    {
+      "q": "The scope protects the name, not the code.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "When the public registry and the private one share a name, the louder version answers.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "He who names an internal package without a scope leaves its name unguarded at the border.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "The enemy publishes version ninety-nine of your secret library and waits for you to prefer the higher number.",
+      "vectors": [
+        "dependency-confusion"
+      ]
+    },
+    {
+      "q": "A postinstall script is a guest who arrives carrying his own key.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "The shortest README hides the longest postinstall.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "A package that must reach the network to install is a soldier who first visits the enemy camp.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "trustedDependencies is the list of those you have permitted to strike first.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "Bun bars the gate to lifecycle scripts. Every name in trustedDependencies is a hole you cut yourself.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "The installer runs before the code is read. So does the thief.",
+      "vectors": [
+        "install-script"
+      ]
+    },
+    {
+      "q": "To pipe a stranger’s script into your shell is to open the gate and close your eyes.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The prebuilt binary downloaded at install is a sealed crate from a ship you never saw dock.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "The maintainer who hands over the keys out of weariness hands over your house as well.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "Trust no maintainer who has not been seen for three winters.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "One maintainer and a million downloads: the whole army sleeps upon a single spear.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "An abandoned package is a fortress with no garrison. The first to arrive holds it.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "He who disables two-factor for convenience saves a minute and spends a year.",
+      "vectors": [
+        "maintainer-takeover",
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The expired domain of a maintainer’s email is a key under the doormat, sold with the house.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "The kind stranger who offers to carry your burden for two years may be the burden.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "A deprecated package is a general who has resigned but still wears the uniform.",
+      "vectors": [
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "The attack comes not in the version you chose, but in the patch release you accepted while sleeping.",
+      "vectors": [
+        "malicious-update",
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The wise general reads the diff. The foolish general reads the changelog.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "A release published at three in the morning, by a hand never seen before, deserves a candle and a long look.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "Trust is earned over many versions and spent in one.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "When the minified file outweighs the source, ask who else came to the feast.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "Protest written into code harms the innocent first. Read before you upgrade.",
+      "vectors": [
+        "malicious-update"
+      ]
+    },
+    {
+      "q": "He who pins his versions sleeps. He who writes the caret dreams of other men’s commits.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The lockfile is your map. Without it, the terrain shifts while you march.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "‘latest’ is not a version. It is a prayer.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The caret is a door that opens toward the future. The future does not knock.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "Two machines installing one package.json are two armies hearing one order in different dialects.",
+      "vectors": [
+        "version-drift",
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "The star in your version field swears loyalty to every king who will ever be crowned.",
+      "vectors": [
+        "version-drift"
+      ]
+    },
+    {
+      "q": "Freeze the lockfile in CI, or CI will improvise.",
+      "vectors": [
+        "version-drift",
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "The secret in .env is a secret only until the first commit.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "The leaked token does not knock. It publishes.",
+      "vectors": [
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The token in your .npmrc is a signet ring. Wear it; do not mail it.",
+      "vectors": [
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "Git forgets nothing. Deleting the secret in the next commit only teaches the enemy where to dig.",
+      "vectors": [
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The library that loads your secrets must be the most boring one you own.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "A secret printed once in a log is a secret told to every scribe in the empire.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "A fork is a promise kept by no one.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "A dependency fetched from a branch is a bridge whose planks are replaced each night.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "Pin by commit, for a tag can be moved and a branch always is.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "Supplies bought from a wagon by the roadside do not come with the granary’s seal.",
+      "vectors": [
+        "remote-source"
+      ]
+    },
+    {
+      "q": "He who audits in peace need not patch in war.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The old version you fear to upgrade is the one the enemy has studied longest.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The advisory is public. The enemy reads the news before you do.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "A known flaw unpatched is not a risk. It is an invitation with a date.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "The crack in your wall is already drawn on the enemy’s maps.",
+      "vectors": [
+        "known-vuln"
+      ]
+    },
+    {
+      "q": "He who controls the build has won the battle before it is fought.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "Your CI runner holds secrets it did not earn. Guard it as you would the general’s tent.",
+      "vectors": [
+        "ci-pipeline",
+        "leaked-secrets"
+      ]
+    },
+    {
+      "q": "The workflow that runs on a stranger’s pull request hands him your quiver.",
+      "vectors": [
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "A cache poisoned in the night is bread poisoned for every soldier at dawn.",
+      "vectors": [
+        "ci-pipeline"
+      ]
+    },
+    {
+      "q": "Inspect the vendored granary before winter, not during the famine.",
+      "vectors": [
+        "ci-pipeline",
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "A thousand stars cast no light on the code inside.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "Do not fear the quiet package with no stars. Fear the loud one with stolen stars.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "Popularity is a banner. Anyone may carry a banner.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "The repository link in the manifest is a claim, not a proof.",
+      "vectors": [
+        "starjacking"
+      ]
+    },
+    {
+      "q": "The dependency you did not choose has already chosen you.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The enemy does not breach the wall. He is invited, as the dependency of a dependency of your linter.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "lint"
+      ]
+    },
+    {
+      "q": "Many small packages make a long border.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "One hundred dependencies, one hundred doors. The enemy needs only one unlatched.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Every require is a bridge you have not inspected.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "When the small pad falls, ten thousand builds go dark.",
+      "vectors": [
+        "attack-surface",
+        "maintainer-takeover"
+      ]
+    },
+    {
+      "q": "The helper you install for a single function brings his whole village.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "Prune what you do not use. An unused dependency is a sentry who reports to no one.",
+      "vectors": [
+        "attack-surface"
+      ]
+    },
+    {
+      "q": "The tests pass. So did the wooden horse, through the gate.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "Bun is fast. The attacker is patient.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Speed is Bun’s gift. Haste is the attacker’s.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "The breach is rarely clever. It is merely patient and unwatched.",
+      "vectors": [
+        "general"
+      ]
+    },
+    {
+      "q": "Know your lockfile and know your registry, and you need not fear a hundred installs.",
+      "vectors": [
+        "general",
+        "version-drift"
+      ]
+    },
+    {
+      "q": "The guard at the gate is the first one the enemy bribes.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "He who writes his own auth library writes the enemy’s victory speech.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "The library that mints your sessions is the mint itself. Guard the mint.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "A token that never expires is a soldier who never returns his sword.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "The lock you did not forge, you must at least inspect.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "Do not trust a cipher whose author you cannot name.",
+      "vectors": [
+        "starjacking"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "Randomness that is not random is a wall made of painted paper.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "A wallet library that phones home has already chosen its master.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "In the land of wallets, every dependency is a pickpocket’s apprentice until proven otherwise.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "The address you copy is the address you trust. The clipboard trusts no one.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "A request library reads every letter you send. Choose the courier carefully.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The client that follows every redirect will one day follow the enemy home.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The server middleware stands at the gate. Know which side it salutes.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "Parse no URL you would not walk to on foot.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The bundler touches every line before your users do. It is the cook in your kitchen.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "The plugin to your bundler is the cook’s assistant. Ask who trained him.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "Dev dependencies do not ship, but they do run. On your machine. With your keys.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "build",
+        "test",
+        "lint"
+      ]
+    },
+    {
+      "q": "The tool you run once runs with all your powers. Once is enough.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The colors in your terminal were a gift. Gifts can be withdrawn.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The logger hears everything. Ensure it repeats nothing.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "A log line that obeys what it writes is a scribe taking orders from the letter.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "The query builder that trusts raw strings opens the gate to whoever speaks in the right tone.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "The driver holds the vault’s address and the vault’s key. Few guards are trusted so much.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "Ten thousand components render faithfully whatever the enemy hands them.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "dangerouslySetInnerHTML was named honestly. Few read the name.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "The script tag you load from a stranger’s CDN is a door to your users, not just to you.",
+      "vectors": [
+        "remote-source"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "The test runner sees your secrets in CI and asks nothing. Give it no reason to talk.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "The headless browser downloads a whole army to fight a single test.",
+      "vectors": [
+        "install-script",
+        "attack-surface"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "Even a package that holds only types can hold an install script.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "The definition promises a shape. It does not promise a friend.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "The native addon speaks the machine’s tongue. You cannot read its letters.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "node-gyp builds in the dark what you will run in daylight.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "The linter reads your whole army on every save. Choose a quiet companion.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "lint"
+      ]
+    },
+    {
+      "q": "The git hook runs before your judgement does.",
+      "vectors": [
+        "install-script"
+      ],
+      "types": [
+        "lint"
+      ]
+    },
+    {
+      "q": "Hash the password slowly, for the enemy guesses quickly.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "The login page is the most visited gate. Its library should be the most watched.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "auth"
+      ]
+    },
+    {
+      "q": "He who invents his own cipher has invented only his own defeat.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "A signing key in the repository is a seal carved on the outer wall.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "The algorithm abandoned by the scholars is still welcomed in your package.json.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "crypto"
+      ]
+    },
+    {
+      "q": "The chain remembers every theft forever and returns none of it.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "web3"
+      ]
+    },
+    {
+      "q": "A seed phrase in an environment variable is treasure buried beneath a signpost.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "web3",
+        "config"
+      ]
+    },
+    {
+      "q": "The websocket stays open long after the courtesy has ended.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "http"
+      ]
+    },
+    {
+      "q": "The transpiler sees the code you wrote and writes the code you run. Between the two, a stranger may sit.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "build"
+      ]
+    },
+    {
+      "q": "The update notifier calls out to the world each time you call on it.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "cli"
+      ]
+    },
+    {
+      "q": "The debug flag left on in production is a lantern hung for the enemy.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "Logs shipped to a stranger’s server are diaries read aloud in the market.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "logging"
+      ]
+    },
+    {
+      "q": "The migration runs with the highest privilege and the lowest scrutiny.",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "The connection string is the vault’s map, key and guard’s name, written on one line.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "database",
+        "config"
+      ]
+    },
+    {
+      "q": "An ORM hides the query from the general, not from the enemy.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "database"
+      ]
+    },
+    {
+      "q": "The component library from an unknown hand renders on every screen you own.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "ui"
+      ]
+    },
+    {
+      "q": "The mock server in your tests listens on a real port.",
+      "vectors": [
+        "attack-surface"
+      ],
+      "types": [
+        "test"
+      ]
+    },
+    {
+      "q": "The squatter favours @types, for no one reads a declaration.",
+      "vectors": [
+        "typosquat"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "Types are documentation that compiles. Malice also compiles.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "@types/ before a name is a uniform, not an allegiance.",
+      "vectors": [
+        "starjacking"
+      ],
+      "types": [
+        "types"
+      ]
+    },
+    {
+      "q": "The binary that runs on every platform was built by someone on every platform. Do you know them all?",
+      "vectors": [
+        "ci-pipeline"
+      ],
+      "types": [
+        "native"
+      ]
+    },
+    {
+      "q": "Configuration is the order of battle. He who changes it commands the army.",
+      "vectors": [
+        "general"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "The config loader that executes its files will execute the enemy’s too.",
+      "vectors": [
+        "known-vuln"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "dotenv reads your secrets faithfully. So will whoever reads dotenv.",
+      "vectors": [
+        "leaked-secrets"
+      ],
+      "types": [
+        "config"
+      ]
+    },
+    {
+      "q": "A formatter rewrites every file you own. Grant such power sparingly.",
+      "vectors": [
+        "malicious-update"
+      ],
+      "types": [
+        "lint"
+      ]
+    }
+  ]
+}
+</script>
+<script>
+(() => {
+  const data = JSON.parse(document.getElementById("scrolldata").textContent);
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const SRC = { classic: "Sun Tzu, The Art of War (tr. Lionel Giles, 1910)", apocrypha: "Bun Tsu, The Art of Dependency" };
+  const all = [];
+  for (const s of ["classic", "apocrypha"]) for (const e of data[s]) all.push({ q: e.q, src: SRC[s], v: e.vectors || ["general"], t: e.types || [] });
+  const NAMES = { "ci-pipeline": "CI pipeline", "known-vuln": "Known vulnerabilities", "install-script": "Install scripts", "leaked-secrets": "Leaked secrets", "malicious-update": "Malicious updates", "remote-source": "Remote sources", "maintainer-takeover": "Maintainer takeover", "types": "@types packages", "http": "HTTP", "ui": "UI", "cli": "CLI", "web3": "Web3" };
+  const label = k => NAMES[k] || k.replace(/-/g, " ").replace(/^./, c => c.toUpperCase());
+  const G = window.gsap;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const animate = !!G && !reduce;
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent && parent.appendChild(n); return n; };
+  const rand = (a, b) => a + Math.random() * (b - a);
+
+  /* ---------- Hero framing + stars + petals ---------- */
+  const scene = $(".hero svg.scene"), narrow = matchMedia("(max-width: 820px)");
+  const frame = () => scene.setAttribute("viewBox", narrow.matches ? "600 90 600 690" : "0 0 1200 760");
+  frame(); narrow.addEventListener("change", frame);
+  const stars = $("#stars");
+  for (let i = 0; i < 46; i++) el("circle", { cx: rand(0, 1200), cy: rand(10, 380), r: rand(.6, 1.8), fill: "#e9efe9", class: "star" }, stars);
+  const petals = $("#petals"), PETALS = narrow.matches ? 9 : 16;
+  const petalEls = [];
+  for (let i = 0; i < PETALS; i++) {
+    const g = el("g", { transform: `translate(${rand(0, 1200)} ${rand(-40, 600)})` }, petals);
+    el("use", { href: "#petal", fill: i % 3 ? "var(--petal)" : "var(--petal-2)", transform: `rotate(${rand(0, 360)}) scale(${rand(.8, 1.5)})` }, g);
+    petalEls.push(g);
+  }
+
+  /* ---------- Saying picker (shared) ---------- */
+  let last = null;
+  const pick = (v, t) => {
+    const tiers = [all.filter(e => v && t && e.v.includes(v) && e.t.includes(t)), all.filter(e => v && e.v.includes(v)), all.filter(e => t && e.t.includes(t)), all];
+    for (const tier of tiers) { const pool = tier.filter(e => e !== last); if (pool.length) { last = pool[Math.floor(Math.random() * pool.length)]; return last; } }
+    return all[0];
+  };
+
+  /* ---------- The general speaks ---------- */
+  const bubble = $("#bubble"), hero = $(".hero");
+  let bubbleTimer;
+  function speak() {
+    const q = pick();
+    $("#bubble-q").textContent = `“${q.q}”`;
+    $("#bubble-src").textContent = q.src.split(",")[0];
+    const gb = $("#general").getBoundingClientRect(), hb = hero.getBoundingClientRect();
+    bubble.style.left = Math.max(12, Math.min(gb.left - hb.left - bubble.offsetWidth + gb.width * .55, hb.width - bubble.offsetWidth - 12)) + "px";
+    bubble.style.top = Math.max(12, gb.top - hb.top - bubble.offsetHeight - 6) + "px";
+    clearTimeout(bubbleTimer);
+    if (animate) {
+      G.timeline()
+        .to("#general", { y: "-=6", duration: .14, yoyo: true, repeat: 1, ease: "power1.out" })
+        .fromTo("#steam path", { y: 0, opacity: .9 }, { y: -22, opacity: 0, duration: .9, stagger: .08, ease: "power1.out" }, 0)
+        .fromTo(bubble, { opacity: 0, y: 10, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: .35, ease: "back.out(2)" }, .1);
+    } else bubble.style.opacity = 1;
+    bubbleTimer = setTimeout(() => animate ? G.to(bubble, { opacity: 0, y: -6, duration: .4 }) : (bubble.style.opacity = 0), 6500);
+  }
+  $("#general").addEventListener("click", speak);
+  $("#ask").addEventListener("click", () => {
+    const gb = $("#general").getBoundingClientRect();
+    if (gb.top >= 0 && gb.bottom <= innerHeight) return speak();
+    scene.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    setTimeout(speak, reduce ? 0 : 550);
+  });
+
+  /* ---------- Army ---------- */
+  const ranks = $("#ranks");
+  const ROWS = 4, COLS = 10, IMPOSTOR = [1, 6], KEYMAN = [3, 2], FATAL = [2, 9];
+  const soldiers = [];
+  const SPECIAL = [IMPOSTOR, KEYMAN, FATAL];
+  const kindOf = (r, c) => SPECIAL.some(([a, b]) => a === r && b === c) ? 0 : r === 0 && (c === 3 || c === 8) ? 6 : (r * 3 + c * 5) % 6;
+  const WEAPON = [
+    `<line class="spear" x1="17" y1="10" x2="17" y2="-52"/><path d="M17 -58l-3 7h6z" fill="var(--m2)"/><path d="M17 -50q-3 3 -1 7" stroke="var(--seal)" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+    `<line class="spear" x1="17" y1="10" x2="17" y2="-52"/><path d="M17 -60l-2.5 8h5z" fill="var(--m2)"/><path d="M17 -47q13 -2 15 9q-9 -5 -15 -3z" fill="var(--m2)"/><path d="M17 -50q-4 4 -1 10" stroke="var(--seal)" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+    `<line class="spear" x1="17" y1="10" x2="17" y2="-78"/><path d="M17 -83l-2 5h4z" fill="var(--m2)"/><path class="flutter" d="M18 -76H38L33 -69L38 -62H18Z" fill="var(--seal)"/><text x="28" y="-66" font-size="8" font-weight="800" text-anchor="middle" font-family="Shippori Mincho, serif" fill="var(--scroll-paper)">兵</text>`
+  ];
+  const SHIELD = `<path d="M-27 -4h17v24q-8.5 9 -17 0z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width="1"/><circle cx="-18.5" cy="8" r="3.4" fill="none" stroke="var(--seal)" stroke-width="1.2"/><circle cx="-18.5" cy="8" r=".9" fill="var(--seal)"/><path d="M-26 0h15" stroke="var(--bamboo-dark)" stroke-width=".7"/>`;
+  const HEAD = [
+    `<path d="M-11.6 -17.5C-4 -21 4 -21 11.6 -17.5" stroke="var(--seal)" stroke-width="2.2" fill="none"/><path d="M11 -18q4 1 5 5M11 -18q5 -1 7 2" stroke="var(--seal)" stroke-width="1.2" fill="none"/>`,
+    `<path d="M-11 -19C-10 -31 10 -31 11 -19C5 -22 -5 -22 -11 -19Z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width=".7"/><path d="M-11 -19l-1 8M11 -19l1 8" stroke="var(--m2)" stroke-width="2"/><path d="M0 -30q-3 -5 1 -9" stroke="var(--seal)" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+    `<path d="M-12.5 -17C-12 -30 12 -30 12.5 -17Z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width=".7"/><path d="M-14 -17h28" stroke="var(--bamboo-dark)" stroke-width="1.6" stroke-linecap="round"/><circle cx="0" cy="-29" r="1.8" fill="var(--seal)"/>`
+  ];
+  const soldierMarkup = k => {
+    const shield = k === 4 || k === 5, h = k === 2 || k === 3 ? 1 : shield ? 2 : 0;
+    return WEAPON[k === 6 ? 2 : k === 2 || k === 3 ? 1 : 0]
+      + `<path class="robe" d="M-14 34 C-12 18 -10 4 -8 -2 L8 -2 C10 4 12 18 14 34Z"/>`
+      + `<path d="M-9 -1L9 -1C10 5 11 11 11.6 17H-11.6C-11 11 -10 5 -9 -1Z" fill="url(#arm-lam)"/><rect x="-11.6" y="16" width="23.2" height="3.2" fill="var(--seal)"/>`
+      + `<path d="M-6 19L-7 34M0 19V34M6 19L7 34" stroke="var(--m2)" stroke-width=".7" fill="none"/><path d="M-9 34h7v4h-8zM2 34h7v4h-8z" fill="var(--m2)"/>`
+      + `<path d="M-9 -2C-15 -1 -17 4 -16 8C-12 6 -9 4 -8 1ZM9 -2C15 -1 17 4 16 8C12 6 9 4 8 1Z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width=".6"/>`
+      + `<path d="M8 1C13 3 16 6 17 9" stroke="var(--m1)" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="17" cy="8" r="2.3" fill="var(--bun)"/>`
+      + (shield ? SHIELD : "")
+      + `<circle class="head" cx="0" cy="-14" r="12"/><path class="pleat" d="M0 -26 C-3 -21 -7 -19 -10 -17 M0 -26 C3 -21 7 -19 10 -17 M0 -26 V-18"/>`
+      + HEAD[h]
+      + `<path d="M-5.5 -12.5q1.8 1.8 3.6 0M1.9 -12.5q1.8 1.8 3.6 0" stroke="var(--bun-line)" stroke-width=".9" fill="none" stroke-linecap="round"/>`;
+  };
+  for (let r = 0; r < ROWS; r++) {
+    const row = el("g", { class: "row", transform: `translate(${(r % 2) * 22 + 40} ${70 + r * 78})` }, ranks);
+    for (let c = 0; c < COLS; c++) {
+      const g = el("g", { class: "soldier", transform: `translate(${40 + c * 54} 0)` }, row);
+      const inner = el("g", { transform: `scale(${0.92 + ((r * 7 + c * 3) % 5) * 0.02})` }, g);
+      el("ellipse", { cx: 0, cy: 37, rx: 15, ry: 3, fill: "var(--m2)", opacity: .22 }, inner);
+      const body = el("g", { class: "body" }, inner);
+      body.insertAdjacentHTML("beforeend", soldierMarkup(kindOf(r, c)));
+      const mask = el("circle", { class: "mask", cx: 0, cy: -14, r: 12.5 }, body);
+      soldiers.push({ g, inner, body, mask, r, c });
+    }
+  }
+  const at = ([r, c]) => soldiers.find(s => s.r === r && s.c === c);
+  const imp = at(IMPOSTOR), keyman = at(KEYMAN), fatal = at(FATAL);
+  const tag = (s, text, y, cls = "tag") => { const t = el("text", { class: cls, x: 0, y, "text-anchor": "middle" }, s.inner); t.textContent = text; return t; };
+  const impTag = tag(imp, "colrs", -66), ghostTag = tag(imp, "not colors", 54, "tag ghost");
+  const key = el("path", { class: "key", d: "M18 6 a5 5 0 1 1 0.1 0 M23 6 h14 M32 6 v5 M36 6 v4" }, keyman.inner);
+  const keyTag = tag(keyman, "postinstall", -66);
+  const fatalTag = tag(fatal, "chalk@5.6.1", 56);
+  const strike = el("line", { x1: -40, y1: 51, x2: 40, y2: 51, stroke: "var(--seal)", "stroke-width": 2, opacity: 0 }, fatal.inner);
+  const colX = s => (s.r % 2) * 22 + 40 + 40 + s.c * 54;  // soldier x in svg units
+
+  /* ---------- Oracle ---------- */
+  const vec = $("#vec"), typ = $("#typ");
+  for (const k of Object.keys(data.vectors)) vec.add(new Option(label(k), k));
+  for (const k of Object.keys(data.types)) typ.add(new Option(label(k), k));
+  let current = null;
+  const burst = $("#burst");
+  for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; el("circle", { cx: 40 + Math.cos(a) * 30, cy: 40 + Math.sin(a) * 30, r: rand(1.5, 3.5), "data-a": a }, burst); }
+  burst.style.opacity = 0;
+  function consult() {
+    current = pick(vec.value, typ.value);
+    const q = $("#q"); q.innerHTML = "";
+    current.q.split(" ").forEach((w, i, arr) => { const s = document.createElement("span"); s.className = "w"; s.textContent = w; q.appendChild(s); if (i < arr.length - 1) q.appendChild(document.createTextNode(" ")); });
+    $("#src").textContent = current.src;
+    $("#tags").textContent = [...current.v.filter(x => x !== "general"), ...current.t].map(label).join(", ");
+    if (!animate) return;
+    const tl = G.timeline();
+    tl.fromTo("#q .w", { opacity: 0, y: 14, filter: "blur(4px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: .5, stagger: .045, ease: "power2.out" })
+      .fromTo("#seal", { scale: 1.9, opacity: 0, rotate: -20 }, { scale: 1, opacity: 1, rotate: 0, duration: .45, ease: "back.out(2.4)", transformOrigin: "50% 50%" }, "-=.15")
+      .set(burst, { opacity: 1 }, "<.3")
+      .fromTo("#burst circle", { attr: { cx: 40, cy: 40 }, opacity: .9 }, {
+        attr: { cx: (i, t) => 40 + Math.cos(+t.dataset.a) * rand(36, 50), cy: (i, t) => 40 + Math.sin(+t.dataset.a) * rand(36, 50) },
+        opacity: 0, duration: .6, ease: "power2.out" }, "<")
+      .fromTo("#smoke", { scaleY: 1 }, { scaleY: 1.25, transformOrigin: "50% 100%", duration: .4, yoyo: true, repeat: 1 }, 0);
+  }
+  $("#consult").addEventListener("click", consult);
+
+  const flash = (btn, text) => { const old = btn.textContent; btn.textContent = text; setTimeout(() => (btn.textContent = old), 1400); };
+  const copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); flash(btn, "Copied"); } catch { flash(btn, "Press Ctrl+C"); } };
+  $$("[data-copy]").forEach(b => b.addEventListener("click", () => copy(b.dataset.copy, b)));
+  $("#copyq").addEventListener("click", e => copy(`“${current ? current.q : $("#q").textContent}” — ${current ? current.src : "Bun Tsu"}`, e.currentTarget));
+  $("#cliq").addEventListener("click", e => { const p = ["bunx @wisdomousai/bun-tsu quote"]; if (vec.value) p.push(`--vector ${vec.value}`); if (typ.value) p.push(`--type ${typ.value}`); copy(p.join(" "), e.currentTarget); });
+
+  /* ---------- Reading toggle ---------- */
+  $$(".toggle button").forEach(b => b.addEventListener("click", () => {
+    $$(".toggle button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    const show = b.dataset.view;
+    $("#omens").hidden = show !== "omens"; $("#plain").hidden = show !== "plain";
+    if (animate) G.fromTo(`#${show} > *`, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: .35, stagger: .06, ease: "power2.out" });
+  }));
+
+  /* ---------- Vectors glossary ---------- */
+  const dl = $("#vectors"), used = new Set();
+  for (const [k, d] of Object.entries(data.vectors)) {
+    if (k === "general") continue;
+    const sample = data.apocrypha.find(e => (e.vectors || [])[0] === k && !used.has(e.q)) || data.apocrypha.find(e => (e.vectors || []).includes(k) && !used.has(e.q));
+    if (sample) used.add(sample.q);
+    const row = document.createElement("div");
+    row.innerHTML = `<dt><button type="button"></button></dt><dd><span></span><q></q></dd>`;
+    row.querySelector("button").textContent = label(k);
+    row.querySelector("span").textContent = d + ".";
+    row.querySelector("q").textContent = sample ? sample.q : "";
+    row.querySelector("button").addEventListener("click", () => { vec.value = k; typ.value = ""; consult(); $("#oracle-h").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); });
+    dl.appendChild(row);
+  }
+
+  if (!animate) {
+    // Reduced motion or no GSAP: show every scene in its final state.
+    imp.mask.style.opacity = .85; fatal.mask.style.opacity = .6;
+    [impTag, ghostTag, key, keyTag, fatalTag, strike].forEach(n => n.style.opacity = 1);
+    $("#inspector").setAttribute("transform", `translate(${colX(imp)} 392)`);
+    petals.style.display = "none";
+    return;
+  }
+  G.registerPlugin(ScrollTrigger);
+
+  /* ---------- Hero: dawn ---------- */
+  const swash = $("#swash"), swLen = swash.getTotalLength();
+  G.set(swash, { strokeDasharray: swLen, strokeDashoffset: swLen });
+  G.set("#hanko", { opacity: 0 });
+  G.set(petalEls, { opacity: 0 });
+  const intro = G.timeline({ defaults: { ease: "power3.out" } });
+  intro
+    .from("#sunwrap circle", { attr: { cy: 540 }, duration: 2.4, ease: "power2.out" })
+    .from("#halo", { opacity: 0, duration: 2.4 }, 0)
+    .from("#far", { y: 60, opacity: 0, duration: 1.6 }, .1)
+    .from("#mid", { y: 80, opacity: 0, duration: 1.6 }, .3)
+    .from("#near", { y: 120, duration: 1.4 }, .45)
+    .from("#pine", { y: 120, duration: 1.4 }, .5)
+    .from("#general", { y: 40, opacity: 0, duration: 1.1 }, 1.0)
+    .from("#wordmark", { clipPath: "inset(0 100% 0 0)", duration: 1.2, ease: "power2.inOut" }, .9)
+    .to(swash, { strokeDashoffset: 0, duration: .9, ease: "power2.inOut" }, 1.8)
+    .fromTo("#hanko", { opacity: 0, scale: 2, rotate: -25 }, { opacity: 1, scale: 1, rotate: 0, duration: .45, ease: "back.out(2.5)", transformOrigin: "50% 50%" }, 2.55)
+    .from(".subtitle, .lede, .cmd, .hint", { y: 16, opacity: 0, duration: .8, stagger: .12 }, 1.5)
+    .to(petalEls, { opacity: .9, duration: 1, stagger: .1 }, 1.6);
+
+  // Ambient life.
+  G.to("#halo", { attr: { r: 210 }, duration: 4, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#mistA", { x: 60, duration: 14, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#mistB", { x: -80, duration: 18, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.fromTo("#steam path", { y: 0, opacity: 0 }, { y: -12, opacity: .8, duration: 1.8, repeat: -1, stagger: .5, ease: "sine.inOut", yoyo: true });
+  G.to("#general .eye", { scaleY: .15, transformOrigin: "50% 50%", duration: .08, repeat: -1, repeatDelay: 4.2, yoyo: true });
+  G.to("#arm", { rotate: -6, transformOrigin: "0% 0%", duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#robe", { skewX: 2.5, transformOrigin: "50% 100%", duration: 2.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#beard", { skewX: 8, transformOrigin: "50% 0%", duration: 1.6, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#sash-tail", { attr: { d: "M14 -76 C24 -62 22 -50 32 -42" }, duration: 1.4, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#pine .needles", { x: 3, duration: 3, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  $$(".star").forEach(s => G.to(s, { opacity: rand(.1, .5), duration: rand(1, 3), repeat: -1, yoyo: true, delay: rand(0, 3), ease: "sine.inOut" }));
+  petalEls.forEach(p => {
+    const fall = () => {
+      const x0 = rand(-50, 1200), drift = rand(80, 260);
+      G.fromTo(p, { x: x0, y: rand(-80, -20), rotate: rand(0, 360) },
+        { x: x0 + drift, y: rand(700, 800), rotate: `+=${rand(180, 540)}`, duration: rand(9, 16), ease: "none", onComplete: fall });
+    };
+    G.delayedCall(rand(0, 8), fall);
+  });
+  $$("#flock .wing").forEach((w, i) => G.to(w, { scaleY: -.6, transformOrigin: "30% 100%", duration: .45 + i * .05, repeat: -1, yoyo: true, ease: "sine.inOut", delay: i * .12 }));
+  G.timeline({ repeat: -1, repeatDelay: 7, delay: 3 })
+    .fromTo("#flock", { x: -160, y: 190 }, { x: 1360, y: 110, duration: 20, ease: "none" });
+
+  G.timeline({ scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } })
+    .to("#far", { y: 40 }, 0).to("#mid", { y: 80 }, 0).to("#near, #general, #pine", { y: 140 }, 0).to("#sunwrap", { y: 90 }, 0);
+
+  /* ---------- Brush dividers paint themselves ---------- */
+  $$(".brush-rule path").forEach(p => {
+    const len = p.getTotalLength();
+    G.fromTo(p, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: p, start: "top 95%", end: "top 55%", scrub: .6 } });
+  });
+
+  /* ---------- The reading ---------- */
+  G.set("#paperstamp", { opacity: 0 });
+  G.timeline({ scrollTrigger: { trigger: "#scroll", start: "top 75%", once: true } })
+    .set(".rod.l", { left: "50%", xPercent: -100 }).set(".rod.r", { right: "50%", xPercent: 100 })
+    .from("#paper", { clipPath: "inset(0 50% 0 50%)", duration: 1.3, ease: "power3.inOut" }, 0)
+    .to(".rod.l", { left: 0, xPercent: 0, duration: 1.3, ease: "power3.inOut" }, 0)
+    .to(".rod.r", { right: 0, xPercent: 0, duration: 1.3, ease: "power3.inOut" }, 0)
+    .fromTo(".tassel", { rotate: 0 }, { rotate: 14, transformOrigin: "50% 0%", duration: .5, yoyo: true, repeat: 3, ease: "sine.inOut" }, .9)
+    .from("#omens > *", { opacity: 0, y: 10, filter: "blur(3px)", duration: .6, stagger: .25 }, .9)
+    .fromTo("#paperstamp", { opacity: 0, scale: 1.8, rotate: 20 }, { opacity: .9, scale: 1, rotate: 0, duration: .4, ease: "back.out(2.5)", transformOrigin: "50% 50%" }, ">-.1");
+  G.to(".tassel", { rotate: 4, transformOrigin: "50% 0%", duration: 2.4, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 3 });
+
+  /* ---------- The army: march, then inspection ---------- */
+  G.set([imp.mask, impTag, ghostTag, key, keyTag, fatalTag, strike], { opacity: 0 });
+  G.set(".omen", { opacity: .25 });
+  G.to("#flag", { skewY: 4, scaleX: .94, transformOrigin: "0% 50%", duration: .9, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#lantern", { rotate: 8, transformOrigin: "50% 0%", duration: 1, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#lantern-light", { attr: { r: 78 }, opacity: .8, duration: .7, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  const walk = (x, d) => [{ x, duration: d, ease: "power1.inOut" }];
+  const step = G.timeline({ paused: true, repeat: -1 }).to("#inspector", { y: "-=3", duration: .2, yoyo: true, repeat: 1, ease: "sine.inOut" });
+  const others = s => soldiers.filter(o => !s.includes(o)).map(o => o.inner);
+  const march = G.timeline({ scrollTrigger: { trigger: "#army", start: "top 65%", once: true } });
+  march
+    .from("#banner", { x: -200, opacity: 0, duration: 1.2, ease: "power2.out" })
+    .from(".soldier", { x: -700, opacity: 0, duration: 1.6, ease: "power2.out", stagger: { each: .025, from: "end", grid: [ROWS, COLS], axis: "x" } }, 0)
+    .to(".soldier .body", { y: -4, duration: .18, repeat: 5, yoyo: true, ease: "sine.inOut", stagger: { each: .01 } }, .2)
+    .add(() => step.play(), "+=.1")
+    .to("#inspector", { x: colX(imp) - 26, duration: 2.4, ease: "power1.inOut" })
+    .add(() => step.pause(0))
+    .to(".omen:nth-child(1)", { opacity: 1, duration: .4 })
+    .to(others([imp]), { opacity: .45, duration: .5 }, "<")
+    .to(imp.inner, { y: -10, duration: .35, ease: "back.out(3)" }, "<")
+    .to(imp.mask, { opacity: .85, duration: .3 }, ">-.05")
+    .to([impTag, ghostTag], { opacity: 1, duration: .3 }, "<")
+    .to(imp.inner, { x: "+=3", duration: .05, repeat: 7, yoyo: true }, "<")
+    .add(() => step.play(), "+=.5")
+    .to("#inspector", { x: colX(keyman) - 26, duration: 1.8, ease: "power1.inOut" })
+    .add(() => step.pause(0))
+    .to(".omen:nth-child(2)", { opacity: 1, duration: .4 })
+    .to(keyman.inner, { opacity: 1, y: -8, duration: .35, ease: "back.out(3)" }, "<")
+    .to([key, keyTag], { opacity: 1, duration: .3 }, ">-.05")
+    .fromTo(key, { rotate: -30 }, { rotate: 0, transformOrigin: "0% 50%", duration: .5, ease: "elastic.out(1, .4)" }, "<")
+    .add(() => step.play(), "+=.5")
+    .to("#inspector", { x: colX(fatal) - 26, duration: 2.6, ease: "power1.inOut" })
+    .add(() => step.pause(0))
+    .to(".omen:nth-child(3)", { opacity: 1, duration: .4 })
+    .to(fatal.inner, { opacity: 1, duration: .2 }, "<")
+    .to([fatalTag, fatal.mask], { opacity: 1, duration: .25 }, "<")
+    .to(strike, { opacity: 1, duration: .2 }, ">")
+    .to(fatal.body, { rotate: 90, transformOrigin: "100% 100%", duration: .8, ease: "bounce.out" }, ">")
+    .to(fatal.body, { opacity: .55, duration: .4 }, ">")
+    .to(others([imp, keyman, fatal]), { opacity: 1, duration: .6 }, "+=.3");
+
+  /* ---------- Oracle extras ---------- */
+  $$("#smoke .wisp").forEach((w, i) => {
+    const len = w.getTotalLength();
+    G.fromTo(w, { strokeDasharray: `${len * .35} ${len}`, strokeDashoffset: len * 1.35 }, { strokeDashoffset: 0, duration: 3.2 + i, repeat: -1, ease: "none", delay: i * 1.2 });
+  });
+  G.to("#smoke", { skewX: 6, transformOrigin: "50% 100%", duration: 2.6, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#ember", { opacity: .4, duration: .8, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.from(".saying", { scrollTrigger: { trigger: "#oracle", start: "top 70%", once: true, onEnter: () => consult() }, opacity: 0, x: 30, duration: .7, ease: "power2.out" });
+
+  /* ---------- Ways: icons come alive on hover and focus ---------- */
+  G.from(".way", { scrollTrigger: { trigger: "#ways", start: "top 75%", once: true }, y: 24, opacity: 0, duration: .7, stagger: .12, ease: "power2.out" });
+  const iconTl = {
+    scroll: w => G.timeline({ paused: true }).fromTo(w.querySelector(".rodL"), { x: 0 }, { x: -5, duration: .3 }).fromTo(w.querySelector(".rodR"), { x: 0 }, { x: 5, duration: .3 }, 0).fromTo(w.querySelectorAll(".lines path"), { opacity: .2 }, { opacity: 1, stagger: .08, duration: .2 }, 0),
+    gate: w => G.timeline({ paused: true }).to(w.querySelector(".doorL"), { scaleX: .1, transformOrigin: "0% 50%", duration: .35 }).to(w.querySelector(".doorR"), { scaleX: .1, transformOrigin: "100% 50%", duration: .35 }, 0).to(w.querySelector(".guard"), { opacity: 1, duration: .25 }, .15),
+    bun: w => G.timeline({ paused: true }).to(w.querySelector(".bunbody"), { y: -3, duration: .2, yoyo: true, repeat: 1 }).fromTo(w.querySelectorAll(".puffs path"), { y: 0, opacity: 1 }, { y: -8, opacity: 0, stagger: .1, duration: .5 }, 0),
+  };
+  $$(".way").forEach(w => {
+    const tl = iconTl[w.dataset.icon](w);
+    w.addEventListener("mouseenter", () => tl.play()); w.addEventListener("mouseleave", () => tl.reverse());
+    w.addEventListener("focusin", () => tl.play()); w.addEventListener("focusout", () => tl.reverse());
+  });
+
+  /* ---------- Footer: the general rests ---------- */
+  G.fromTo("#zzz text", { y: 6, opacity: 0 }, { y: -8, opacity: 1, duration: 1.4, stagger: .5, repeat: -1, repeatDelay: .4, ease: "sine.out" });
+  G.to("#sleeper", { scaleY: 1.02, transformOrigin: "50% 100%", duration: 1.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.from("#moon", { scrollTrigger: { trigger: "footer", start: "top 90%", once: true }, attr: { cy: 160 }, opacity: 0, duration: 2, ease: "power2.out" });
+})();
+</script>
+</body>
+</html>
