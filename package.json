@@ -4,7 +4,7 @@
   "description": "Is your cybersecurity team giving you cryptic requirements that you can't really understand, but they sound really important? Bun Tsu can help you automate this!",
   "type": "module",
   "bin": {
-    "bun-tsu": "./src/cli.ts"
+    "bun-tsu": "src/cli.ts"
   },
   "exports": {
     ".": "./src/index.ts",

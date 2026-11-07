@@ -22,7 +22,7 @@
   --m1: #2b3833; --m2: #6f817a; --m3: #a9b8b1; --mist: #eef3f0;
   --bun: #ecd5a6; --bun-line: #7a5a2c; --beard: #dfe3df; --petal: #e7a1a6; --petal-2: #f3c9c4;
   --bamboo: #a87a3c; --bamboo-dark: #6e4f25; --jade: #2f6b57; --seal: #b3372b;
-  --sun: #c9452f; --glow: #f0a184; --stars: 0; --lantern: #ffcf7a;
+  --sun: #c9452f; --glow: #f0a184; --stars: 0; --paint-far: 1; --paint-mid: 1; --lantern: #ffcf7a;
   --term-bg: #1a221e; --term-ink: #d9e2dc; --term-dim: #7f8f87;
   --rule: #c4d0c8; --scroll-paper: #f3efe4; --scroll-ink: #2a2620;
   --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
@@ -37,7 +37,7 @@
     --m1: #070b09; --m2: #26332e; --m3: #3b4a44; --mist: #1d2824;
     --beard: #c9cfca; --petal: #c77c86; --petal-2: #8f5a63;
     --bamboo: #d2a766; --bamboo-dark: #e3c08a; --jade: #6dba9c; --seal: #e0584a;
-    --sun: #efe6cf; --glow: #8fa39a; --stars: 1;
+    --sun: #efe6cf; --glow: #8fa39a; --stars: 1; --paint-far: .35; --paint-mid: .6;
     --term-bg: #0b100e; --rule: #2a3732; --scroll-paper: #e9e3d3; color-scheme: dark;
   }
 }
@@ -46,7 +46,7 @@
   --m1: #070b09; --m2: #26332e; --m3: #3b4a44; --mist: #1d2824;
   --beard: #c9cfca; --petal: #c77c86; --petal-2: #8f5a63;
   --bamboo: #d2a766; --bamboo-dark: #e3c08a; --jade: #6dba9c; --seal: #e0584a;
-  --sun: #efe6cf; --glow: #8fa39a; --stars: 1;
+  --sun: #efe6cf; --glow: #8fa39a; --stars: 1; --paint-far: .35; --paint-mid: .6;
   --term-bg: #0b100e; --rule: #2a3732; --scroll-paper: #e9e3d3; color-scheme: dark;
 }
 *, *::before, *::after { box-sizing: inherit; }
@@ -61,16 +61,8 @@ h3 { font: 700 1.1875rem/1.3 var(--sans); margin: 0 0 .4rem; }
 p { margin: 0 0 1rem; }
 section { padding: clamp(2.5rem, 7vw, 5rem) 0; }
 .lead { color: var(--ink-soft); max-width: 34rem; }
-.m1 { fill: var(--m1); } .m2 { fill: var(--m2); } .m3 { fill: var(--m3); } .mist { fill: var(--mist); }
-
-@media (prefers-reduced-motion: no-preference) {
-  .flutter { transform-box: fill-box; transform-origin: 0 50%; animation: flutter 3.4s ease-in-out infinite alternate; }
-  .flutter.v { transform-origin: 50% 0; animation-name: flutterv; animation-duration: 4.2s; }
-  .drift { transform-box: fill-box; transform-origin: 50% 100%; animation: drift 6s ease-in-out infinite alternate; }
-  @keyframes flutter { from { transform: skewY(-3deg) scaleX(1); } to { transform: skewY(4deg) scaleX(.92); } }
-  @keyframes flutterv { from { transform: skewX(-3deg); } to { transform: skewX(4deg) scaleY(.97); } }
-  @keyframes drift { from { transform: skewX(-7deg); } to { transform: skewX(7deg); } }
-}
+.m1 { fill: var(--m1); } .m2 { fill: var(--m2); } .m3 { fill: var(--m3); } .mist { fill: var(--mist); } .mist.fade { fill: url(#mistfade); }
+.paint.far { opacity: var(--paint-far); } .paint.mid { opacity: var(--paint-mid); }
 
 /* ---------- Hero ---------- */
 .hero { position: relative; min-height: max(600px, 100svh); display: flex; align-items: flex-end; overflow: hidden; }
@@ -134,9 +126,7 @@ section { padding: clamp(2.5rem, 7vw, 5rem) 0; }
 .army { background: var(--paper-deep); overflow: hidden; }
 .army-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 3.5rem); align-items: center; }
 .army svg { width: 100%; height: auto; display: block; overflow: visible; }
-.soldier .robe { fill: var(--m1); } .soldier .head { fill: var(--bun); stroke: var(--bun-line); stroke-width: 1.2; }
-.soldier .pleat { stroke: var(--bun-line); stroke-width: 1; fill: none; } .soldier .spear { stroke: var(--m2); stroke-width: 1.5; }
-.soldier .mask { fill: var(--seal); opacity: 0; }
+.soldier .mask { fill: none; stroke: var(--seal); stroke-width: 2.5; stroke-dasharray: 5 3; opacity: 0; }
 .tag { font: 700 13px var(--mono); fill: var(--seal); opacity: 0; paint-order: stroke; stroke: var(--paper-deep); stroke-width: 4px; stroke-linejoin: round; }
 .tag.ghost { fill: var(--ink-soft); font-weight: 400; }
 .key { fill: none; stroke: var(--seal); stroke-width: 2.2; opacity: 0; }
@@ -154,7 +144,7 @@ section { padding: clamp(2.5rem, 7vw, 5rem) 0; }
 .consult-row { display: flex; align-items: flex-end; gap: .75rem; }
 .consult { flex: 1; font: 700 1.0625rem var(--sans); background: var(--seal); color: #fff; border: 0; border-radius: 6px; padding: .8rem 1.4rem; cursor: pointer; }
 .consult:hover { filter: brightness(1.08); }
-.incense { width: 64px; height: 112px; flex: none; overflow: visible; }
+.incense { width: 84px; height: 154px; flex: none; overflow: visible; }
 .saying { position: relative; min-height: 16rem; margin: 0; padding: clamp(1.5rem, 4vw, 2.75rem); padding-right: clamp(5.5rem, 12vw, 8.5rem); background: var(--paper-deep); border-left: 6px solid var(--bamboo); }
 .saying blockquote { margin: 0; font: 500 clamp(1.5rem, 3.4vw, 2.25rem)/1.4 var(--serif); }
 .saying blockquote .w { display: inline-block; }
@@ -209,201 +199,39 @@ footer p { max-width: 42rem; margin-bottom: .75rem; }
   <svg class="scene" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <defs>
       <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky-top"/><stop offset="1" class="sky-bot"/></linearGradient>
-      <radialGradient id="glow"><stop offset="0" stop-color="var(--glow)" stop-opacity=".55"/><stop offset="1" stop-color="var(--glow)" stop-opacity="0"/></radialGradient>
+      <radialGradient id="glow"><stop offset="0" stop-color="var(--glow)" stop-opacity=".55"/><stop offset="1" stop-color="var(--glow)" stop-opacity="0"/></radialGradient><radialGradient id="mistfade"><stop offset="0" stop-color="var(--mist)"/><stop offset=".5" stop-color="var(--mist)" stop-opacity=".8"/><stop offset="1" stop-color="var(--mist)" stop-opacity="0"/></radialGradient>
       <radialGradient id="lanternglow"><stop offset="0" stop-color="var(--lantern)" stop-opacity=".55"/><stop offset="1" stop-color="var(--lantern)" stop-opacity="0"/></radialGradient>
-      <filter id="inkwash" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
       <filter id="brushedge" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
-      <filter id="soft" x="-50%" y="-300%" width="200%" height="700%"><feGaussianBlur stdDeviation="22"/></filter>
       <filter id="stampwear" x="-6%" y="-6%" width="112%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -9 6.6" result="holes"/><feComposite in="SourceGraphic" in2="holes" operator="in"/></filter>
       <path id="petal" d="M0 0 C3 -5 9 -5 10 0 C9 5 3 5 0 0Z"/>
-      <pattern id="lamella" width="6" height="10" patternUnits="userSpaceOnUse"><rect width="6" height="10" fill="var(--m1)"/><path d="M0 4.6H6M0 9.6H6M3 0V4.6M0 4.6V9.6M6 4.6V9.6" stroke="var(--m2)" stroke-width=".7" fill="none"/><path d="M1.2 2.3h1.6M4.2 2.3h1.6M.2 7.3h1.4M3.2 7.3h1.6" stroke="var(--bamboo)" stroke-width=".55" opacity=".55"/></pattern>
-      <pattern id="meander" width="10" height="8" patternUnits="userSpaceOnUse"><path d="M1 7V1H9V5H4.5V3.2H6.6" fill="none" stroke="var(--m2)" stroke-width=".9"/></pattern>
-      <pattern id="fretjade" width="8" height="7" patternUnits="userSpaceOnUse"><path d="M.8 6V.8H7.2V4H3.6V2.6H5.2" fill="none" stroke="var(--jade)" stroke-width=".8"/></pattern>
       <pattern id="rodpat" width="7" height="12" patternUnits="userSpaceOnUse"><rect width="7" height="12" fill="var(--bamboo)"/><path d="M0 11H7" stroke="var(--bamboo-dark)" stroke-width="1.5"/></pattern>
       <pattern id="doorstud" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="var(--seal)"/><circle cx="4" cy="4" r="1.4" fill="var(--bamboo)"/></pattern>
-      <path id="xy" d="M0 14C-4 8 2 3 8 6C8 -1 18 -3 21 3C26 0 32 4 30 9C35 10 36 16 31 17H4C1 17 0 16 0 14Z"/>
-      <g id="tower" fill="currentColor"><path fill-rule="evenodd" d="M-12 0V-14H12V0Z M-2 -3V-10Q0 -12 2 -10V-3Z"/><path d="M-19 -15C-12 -14 -9 -17 -8 -20H8C9 -17 12 -14 19 -15C14 -12 -14 -12 -19 -15Z"/><path fill-rule="evenodd" d="M-8 -20V-30H8V-20Z M-2 -22V-28H2V-22Z"/><path d="M-14 -31C-8 -30 -6 -33 -5 -36H5C6 -33 8 -30 14 -31C10 -28 -10 -28 -14 -31Z"/><path d="M-1.2 -36L0 -45L1.2 -36Z"/></g>
-      <g id="gate" fill="currentColor"><path fill-rule="evenodd" d="M-36 0V-18H36V0Z M-7 0V-9A7 7 0 0 1 7 -9V0Z"/><path d="M-36 -21H36" stroke="currentColor" stroke-width="5" stroke-dasharray="5 4" fill="none"/><use href="#tower" transform="translate(0 -18) scale(1.1)"/></g>
-      <g id="tuft" fill="currentColor"><path d="M-1 0L0 -12L1 0Z"/><ellipse cx="0" cy="-12" rx="8" ry="2.6"/><ellipse cx="-2" cy="-16" rx="6" ry="2.2"/><ellipse cx="1" cy="-19.5" rx="4" ry="1.8"/></g>
-      <path id="cun" d="M0 0q5 3 3 9M8 -3q4 4 1 11M-7 4q3 3 2 9M14 5q3 3 1 8" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
-      <path id="grass" d="M0 0l-3 -9M2 0l1 -11M4 0l5 -8M-2 0l-6 -6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      <g id="tent" fill="currentColor"><path d="M0 0L9 -13L18 0Z"/><path d="M9 -13V-20" stroke="currentColor" stroke-width="1"/><path d="M9 -20h6l-1.5 2 1.5 2h-6z" fill="var(--seal)"/></g>
-      <g id="crane-shape">
-        <path d="M0 0 C18 -2 38 2 56 0 C64 -1 72 -6 78 -10" stroke="var(--m1)" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M10 -2C24 -7 44 -5 58 -1C44 5 24 5 10 -2Z" fill="var(--m1)"/>
-        <path class="wing" d="M32 0C38 -22 52 -34 68 -38C62 -22 56 -10 46 0Z" fill="var(--m1)" opacity=".5"/>
-        <path class="wing" d="M30 0 C36 -28 52 -44 74 -50 C66 -30 58 -14 46 0Z" fill="var(--m1)"/>
-        <path d="M0 0 L-22 4M3 1 L-24 8" stroke="var(--m1)" stroke-width="1.8"/>
-        <path d="M8 -1L-6 -6L-4 -1L-10 2Z" fill="var(--m1)"/>
-        <path d="M80 -11L90 -9" stroke="var(--m1)" stroke-width="1.6" stroke-linecap="round"/>
-        <circle cx="80" cy="-11" r="3" fill="var(--seal)"/>
-      </g>
     </defs>
     <rect width="1200" height="760" fill="url(#sky)"/>
     <g class="stars" id="stars"></g>
     <g id="sunwrap"><circle id="halo" cx="800" cy="250" r="190" fill="url(#glow)"/><circle id="sun" cx="800" cy="250" r="96" fill="var(--sun)" filter="url(#brushedge)" opacity=".94"/></g>
-    <g id="clouds" opacity=".5">
-      <use class="m3" href="#xy" transform="translate(760 292) scale(3.4 2)"/>
-      <use class="m3" href="#xy" transform="translate(120 150) scale(2.6 1.6)"/>
-      <use class="m3" href="#xy" transform="translate(470 96) scale(2 1.2)"/>
-      <use class="m3" href="#xy" transform="translate(1010 130) scale(2.4 1.4)"/>
-      <path d="M740 300C780 296 820 298 860 304M110 160C140 156 180 158 214 164" fill="none" stroke="var(--m2)" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
-    </g>
-    <g id="far" filter="url(#inkwash)">
-      <path class="m3" opacity=".42" d="M-20 470V360C0 350 20 300 40 250C50 225 62 225 70 255C82 300 100 330 130 330C150 330 150 300 170 270C182 250 196 254 202 280C214 330 240 380 300 380C360 380 400 340 440 300C452 285 468 285 476 300C500 340 560 370 640 360C700 352 740 300 790 270C805 262 818 262 826 276C850 320 900 360 960 356C1040 350 1100 300 1140 250C1152 236 1166 238 1172 256C1184 290 1200 320 1220 330V700H-20Z"/>
-      <path class="m3" d="M-20 520 C90 430 160 360 250 420 C320 465 380 330 470 345 C560 360 600 440 700 410 C800 380 880 290 990 350 C1080 400 1140 370 1220 360 L1220 780 L-20 780Z"/>
-      <g style="color:var(--m2)" opacity=".34"><use href="#cun" transform="translate(150 428) scale(1.5)"/><use href="#cun" transform="translate(205 396) scale(1.2)"/><use href="#cun" transform="translate(330 438) scale(1.4)"/><use href="#cun" transform="translate(540 404) scale(1.3)"/><use href="#cun" transform="translate(770 408) scale(1.4)"/><use href="#cun" transform="translate(1080 396) scale(1.5)"/><use href="#cun" transform="translate(1150 380) scale(1.1)"/></g>
-      <g style="color:var(--m2)" opacity=".7"><use href="#tuft" transform="translate(120 416) scale(.8)"/><use href="#tuft" transform="translate(140 421) scale(.6)"/><use href="#tuft" transform="translate(600 424) scale(.9)"/><use href="#tuft" transform="translate(618 430) scale(.7)"/><use href="#tuft" transform="translate(1120 378) scale(.9)"/><use href="#tuft" transform="translate(1146 372) scale(.7)"/></g>
-      <g style="color:var(--m2)" opacity=".8">
-        <path d="M250 417C320 462 380 327 470 342" fill="none" stroke="currentColor" stroke-width="4.5"/>
-        <path transform="translate(0 -3.5)" d="M250 417C320 462 380 327 470 342" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 3.2"/>
-        <path d="M470 342C515 350 548 373 581 391" fill="none" stroke="currentColor" stroke-width="4.5"/>
-        <path transform="translate(0 -3.5)" d="M470 342C515 350 548 373 581 391" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 3.2"/>
-        <use href="#tower" transform="translate(470 348) scale(.5)"/>
-        <use href="#tower" transform="translate(374 380) scale(.4)"/>
-        <use href="#tower" transform="translate(311 423) scale(.34)"/>
-        <use href="#tower" transform="translate(869 340) scale(.55)"/>
-      </g>
-      <path class="drift" d="M869 312C860 298 880 290 870 276C860 262 884 254 874 238C868 228 880 222 876 212" fill="none" stroke="var(--m2)" stroke-width="3.4" stroke-linecap="round" opacity=".45"/>
-      <g class="m3" transform="translate(668 404)" style="filter: brightness(.8)">
-        <path d="M-2 0 h24 v-8 h-24z M-6 -8 h32 l-6 -6 h-20z M0 -14 h20 v-6 h-20z M-4 -20 h28 l-6 -6 h-16z M3 -26 h14 v-5 h-14z M0 -31 h20 l-5 -5 h-10z M9 -36 v-7 h2 v7z"/>
-        <path d="M-6 -8q-4 -1 -5 -5M26 -8q4 -1 5 -5M-4 -20q-4 -1 -5 -5M24 -20q4 -1 5 -5M0 -31q-4 -1 -4 -5M20 -31q4 -1 4 -5" fill="none" stroke="var(--m3)" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M8 0v-8h4v8z M8.5 -14v-6h3v6z" fill="var(--m1)" opacity=".6"/>
-      </g>
-    </g>
-    <g id="mistA" filter="url(#soft)" opacity=".85"><ellipse class="mist" cx="260" cy="470" rx="260" ry="34"/><ellipse class="mist" cx="900" cy="440" rx="300" ry="30"/><ellipse class="mist" cx="560" cy="420" rx="230" ry="16"/><ellipse class="mist" cx="1100" cy="400" rx="180" ry="14"/><ellipse class="mist" cx="120" cy="380" rx="170" ry="14"/></g>
-    <g id="mid" filter="url(#inkwash)">
-      <path class="m2" d="M-20 600 C80 540 150 470 230 500 C300 525 340 450 420 470 C510 495 540 560 640 540 C720 525 760 480 830 500 C900 520 960 560 1060 540 C1130 525 1180 540 1220 550 L1220 780 L-20 780Z"/>
-      <g style="color:var(--m1)">
-        <path d="M674 531C722 515 756 492 800 494" fill="none" stroke="currentColor" stroke-width="5" opacity=".5"/>
-        <path transform="translate(0 -4)" d="M674 531C722 515 756 492 800 494" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 3.2" opacity=".5"/>
-        <use href="#gate" transform="translate(804 498) scale(.62)" opacity=".62"/>
-        <g opacity=".5"><use href="#tuft" transform="translate(232 502) scale(1.2)"/><use href="#tuft" transform="translate(252 506) scale(.9)"/><use href="#tuft" transform="translate(420 472) scale(1.3)"/><use href="#tuft" transform="translate(444 476) scale(.9)"/><use href="#tuft" transform="translate(900 516) scale(1.1)"/><use href="#tuft" transform="translate(922 522) scale(.8)"/><use href="#tuft" transform="translate(1096 538) scale(1.2)"/></g>
-      </g>
-      <g style="color:var(--m1)" opacity=".22"><use href="#cun" transform="translate(110 566) scale(1.8)"/><use href="#cun" transform="translate(290 526) scale(1.6)"/><use href="#cun" transform="translate(520 546) scale(1.6)"/><use href="#cun" transform="translate(980 566) scale(1.7)"/><use href="#cun" transform="translate(1140 566) scale(1.5)"/></g>
-    </g>
-    <g id="mistB" filter="url(#soft)" opacity=".8"><ellipse class="mist" cx="600" cy="560" rx="360" ry="30"/><ellipse class="mist" cx="1000" cy="580" rx="200" ry="18"/><ellipse class="mist" cx="160" cy="590" rx="200" ry="18"/></g>
+    <g id="far"><image class="paint far" href="art/far.webp" x="-60" y="200" width="1320" height="534"/></g>
+    <g id="mistA" opacity=".85"><ellipse class="mist fade" cx="260" cy="470" rx="300" ry="74"/><ellipse class="mist fade" cx="900" cy="440" rx="340" ry="70"/><ellipse class="mist fade" cx="560" cy="420" rx="270" ry="56"/><ellipse class="mist fade" cx="1100" cy="400" rx="220" ry="54"/><ellipse class="mist fade" cx="120" cy="380" rx="210" ry="54"/></g>
+    <g id="mid"><image class="paint mid" href="art/mid.webp" x="-60" y="360" width="1320" height="441"/></g>
+    <g id="mistB" opacity=".8"><ellipse class="mist fade" cx="600" cy="560" rx="400" ry="70"/><ellipse class="mist fade" cx="1000" cy="580" rx="240" ry="58"/><ellipse class="mist fade" cx="160" cy="590" rx="240" ry="58"/></g>
     <g id="flock">
-      <g class="crane" transform="translate(0 0) scale(1)"><use href="#crane-shape"/></g>
-      <g class="crane" transform="translate(-62 30) scale(.75)"><use href="#crane-shape"/></g>
-      <g class="crane" transform="translate(-54 -26) scale(.7)"><use href="#crane-shape"/></g>
+      <image class="crane" href="art/crane.webp" x="0" y="-60" width="150" height="105"/>
+      <image class="crane" href="art/crane.webp" x="-110" y="-10" width="100" height="70"/>
     </g>
     <g id="near">
-      <g id="banners">
-        <path d="M700 664V404" stroke="var(--bamboo-dark)" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M700 404l-3.4 -5l3.4 -16l3.4 16z" fill="var(--m2)"/>
-        <path d="M699 410c-8 2 -10 9 -8 17M699 410c-4 4 -5 11 -3 18M701 410c6 3 9 9 7 16" fill="none" stroke="var(--seal)" stroke-width="2" stroke-linecap="round"/>
-        <path d="M700 430H744" stroke="var(--bamboo-dark)" stroke-width="2.4"/>
-        <g class="flutter v"><path d="M704 430H742V494L723 482L704 494Z" fill="var(--seal)"/><path d="M707 434H739V487L723 477L707 487Z" fill="none" stroke="var(--scroll-paper)" stroke-width="1" stroke-dasharray="3 2" opacity=".8"/><text x="723" y="462" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="22" fill="var(--scroll-paper)">兵</text></g>
-        <path d="M1166 640V470" stroke="var(--bamboo-dark)" stroke-width="3" stroke-linecap="round"/>
-        <path d="M1166 470l-3 -4l3 -13l3 13z" fill="var(--m2)"/>
-        <g class="flutter"><path d="M1169 474H1200L1192 483L1200 492H1169Z" fill="var(--seal)"/><text x="1181" y="488" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="11" fill="var(--scroll-paper)">包</text></g>
-      </g>
-      <path class="m1" d="M-20 700 C160 660 340 700 520 680 C640 668 720 640 790 600 C820 560 840 520 870 505 C930 490 1020 492 1070 510 C1110 540 1150 600 1220 610 L1220 780 L-20 780Z"/>
-      <g style="color:var(--m2)" opacity=".5"><use href="#cun" transform="translate(80 716) scale(2)"/><use href="#cun" transform="translate(300 710) scale(2)"/><use href="#cun" transform="translate(520 706) scale(2)"/><use href="#cun" transform="translate(980 540) scale(1.6)"/><use href="#cun" transform="translate(1100 600) scale(1.8)"/><use href="#cun" transform="translate(1170 640) scale(1.6)"/></g>
-      <g style="color:var(--m1)"><use href="#grass" transform="translate(884 499)"/><use href="#grass" transform="translate(902 497) scale(.8)"/><use href="#grass" transform="translate(1054 506)"/><use href="#grass" transform="translate(822 540) scale(.9)"/><use href="#grass" transform="translate(600 676)"/><use href="#grass" transform="translate(240 692) scale(1.1)"/></g>
-      <g id="wardrum">
-        <path d="M1015 505L1021 478M1045 505L1039 478" stroke="var(--bamboo-dark)" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="1030" cy="466" r="15" fill="var(--seal)" stroke="var(--bamboo-dark)" stroke-width="2.5"/>
-        <circle cx="1030" cy="466" r="12" fill="none" stroke="var(--bamboo)" stroke-width="2" stroke-dasharray="1.4 3.2"/>
-        <circle cx="1030" cy="466" r="5.5" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".8"/>
-        <path d="M1034 464l4 4M1026 464l-4 4" stroke="var(--bamboo-dark)" stroke-width=".8"/>
-        <path d="M1006 480L1022 468M1054 480L1038 468" stroke="var(--bamboo-dark)" stroke-width="2" stroke-linecap="round"/>
+      <image class="paint near" href="art/near.webp" x="200" y="191" width="1244" height="801"/>
+      <g transform="translate(545 276) scale(.2)">
+        <image href="art/banner-pole.webp" x="232" y="25" width="90" height="1485"/>
+        <image id="hflag" href="art/banner-flag.webp" x="293" y="270" width="643" height="516"/>
       </g>
     </g>
-    <g id="pine" filter="url(#inkwash)">
-      <path d="M1072 512 C1078 480 1096 458 1122 446 C1140 437 1156 426 1170 408" stroke="var(--m1)" stroke-width="9" fill="none" stroke-linecap="round"/>
-      <path d="M1104 462 C1092 450 1078 446 1062 448 M1140 436 C1150 446 1166 450 1184 448" stroke="var(--m1)" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M1078 496c4 -8 4 -16 10 -22M1096 470c8 -2 12 -6 16 -12M1090 492c6 -2 10 -6 12 -10" stroke="var(--m2)" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".7"/>
-      <g class="needles m1"><ellipse cx="1172" cy="402" rx="40" ry="11"/><ellipse cx="1120" cy="434" rx="34" ry="10"/><ellipse cx="1060" cy="444" rx="26" ry="8"/><ellipse cx="1186" cy="444" rx="24" ry="7"/><ellipse cx="1150" cy="386" rx="22" ry="6"/><ellipse cx="1100" cy="420" rx="16" ry="5"/></g>
-    </g>
-    <g id="general" transform="translate(965 505) scale(1.25)">
-      <rect x="-70" y="-200" width="140" height="205" fill="transparent"/>
-      <g id="steam" fill="none" stroke="var(--m2)" stroke-width="2.2" stroke-linecap="round" opacity=".7">
-        <path d="M-10 -168 c-6 -8 6 -14 0 -22"/><path d="M0 -172 c-6 -8 6 -14 0 -22"/><path d="M10 -168 c-6 -8 6 -14 0 -22"/>
+    <g id="general"><g transform="translate(721 199) scale(.215)">
+      <image id="steam" href="art/general-steam.webp" x="382" y="16" width="262" height="215"/>
+      <g id="gfig">
+        <image href="art/general-body.webp" x="91" y="180" width="832" height="1338"/>
+        <image id="gsash" href="art/general-sash.webp" x="745" y="975" width="181" height="322"/>
       </g>
-      <path d="M-60 3C-34 -4 34 -4 60 3L54 9C20 12 -20 12 -54 9Z" fill="var(--m2)"/>
-      <path d="M-48 4l-3 -5M-42 3l-1 -6M46 4l3 -5M40 3l1 -6" stroke="var(--m1)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-      <g id="backsword">
-        <path d="M26 -112L-48 2" stroke="var(--m2)" stroke-width="6" stroke-linecap="round"/>
-        <path d="M26 -112L-48 2" stroke="var(--m1)" stroke-width="4" stroke-linecap="round"/>
-        <path d="M-44 -4L-48 2" stroke="var(--bamboo)" stroke-width="5.4" stroke-linecap="round"/>
-        <path d="M26 -112L34 -124" stroke="var(--bamboo-dark)" stroke-width="3.6" stroke-linecap="round"/>
-        <path d="M22 -116L30 -108" stroke="var(--bamboo)" stroke-width="3.6" stroke-linecap="round"/>
-        <circle cx="35" cy="-126" r="2.6" fill="var(--seal)"/>
-        <path d="M35 -124C41 -118 39 -108 43 -100M35 -124C38 -116 36 -108 38 -100M35 -124C44 -120 45 -110 49 -104" stroke="var(--seal)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      </g>
-      <path d="M-28 -4H-10L-9 3C-9 7 -14 8 -20 8H-30C-32 5 -30 0 -28 -4ZM10 -4H28C30 0 32 5 30 8H20C14 8 9 7 9 3Z" fill="var(--m1)" stroke="var(--m2)" stroke-width=".8"/>
-      <g id="robe">
-        <path d="M-40 0 C-36 -40 -31 -80 -22 -106 L22 -106 C31 -80 36 -40 40 0 Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
-        <path d="M-14 -75C-15 -55 -18 -35 -22 -16M-6 -75C-6 -55 -7 -35 -8 -14M3 -75C3 -55 4 -35 5 -14M11 -75C12 -55 15 -35 19 -15M-26 -70C-28 -50 -31 -35 -34 -17M24 -70C27 -50 31 -35 34 -17" stroke="var(--m2)" stroke-width=".8" fill="none" opacity=".75"/>
-        <path d="M-40 0L-38.6 -15C-20 -12 20 -12 38.6 -15L40 0Z" fill="url(#meander)" opacity=".9"/>
-        <path d="M-36 -4 C-20 -10 20 -10 36 -4" stroke="var(--m2)" stroke-width="1.2" fill="none"/>
-        <path d="M-23 -103C-24 -96 -24 -88 -23.5 -80H23.5C24 -88 24 -96 23 -103C14 -98 -14 -98 -23 -103Z" fill="url(#lamella)" stroke="var(--m2)" stroke-width=".8"/>
-        <circle cx="-14" cy="-92" r="5.2" fill="var(--bamboo)" stroke="var(--m1)" stroke-width="1"/><circle cx="14" cy="-92" r="5.2" fill="var(--bamboo)" stroke="var(--m1)" stroke-width="1"/>
-        <circle cx="-14" cy="-92" r="2.6" fill="none" stroke="var(--m1)" stroke-width=".7"/><circle cx="14" cy="-92" r="2.6" fill="none" stroke="var(--m1)" stroke-width=".7"/>
-        <path d="M-21 -73h6.2v11q-3.1 3 -6.2 0zM-14.4 -73h6.2v11q-3.1 3 -6.2 0zM-7.8 -73h6.2v11q-3.1 3 -6.2 0zM-1.2 -73h6.2v11q-3.1 3 -6.2 0zM5.4 -73h6.2v11q-3.1 3 -6.2 0zM12 -73h6.2v11q-3.1 3 -6.2 0zM18.6 -73h6.2v11q-3.1 3 -6.2 0z" fill="var(--m1)" stroke="var(--m2)" stroke-width=".8"/>
-        <path id="sash-tail" d="M14 -76 C18 -60 14 -48 20 -36" stroke="var(--seal)" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <rect x="-23" y="-80" width="46" height="7" rx="2" fill="var(--seal)"/>
-        <path d="M-17 -79v5M-9 -79v5M9 -79v5M17 -79v5" stroke="var(--bamboo)" stroke-width=".7" opacity=".7"/>
-        <rect x="-5.5" y="-82" width="11" height="11" rx="2.4" fill="var(--bamboo)" stroke="var(--m1)" stroke-width="1"/><circle cx="0" cy="-76.5" r="2.6" fill="var(--jade)"/>
-        <path d="M-13 -72V-62" stroke="var(--seal)" stroke-width="1" fill="none"/>
-        <circle cx="-13" cy="-56" r="5" fill="var(--jade)" stroke="var(--m1)" stroke-width=".8"/><circle cx="-13" cy="-56" r="1.7" fill="var(--m1)"/>
-        <path d="M-13 -51V-44M-15.5 -44h5M-14.5 -44l-1 5M-13 -44v6M-11.5 -44l1 5" stroke="var(--seal)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-      </g>
-      <path d="M-22 -102 C-52 -94 -64 -64 -56 -46 C-44 -41 -30 -56 -21 -72Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
-      <path d="M-30 -98C-44 -88 -52 -68 -50 -54M-34 -92C-44 -82 -48 -70 -47 -58" stroke="var(--m2)" stroke-width=".8" fill="none" opacity=".8"/>
-      <path d="M-57 -47C-52 -41 -43 -42 -38 -50" stroke="var(--bamboo)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <g id="fan" transform="translate(-50 -46) rotate(-24)">
-        <path d="M0 0L0 9" stroke="var(--bamboo-dark)" stroke-width="2.6" stroke-linecap="round"/>
-        <g fill="var(--scroll-paper)" stroke="var(--bamboo-dark)" stroke-width=".6">
-          <path transform="rotate(-66)" d="M0 0C-4 -9 -4.5 -21 0 -29C4.5 -21 4 -9 0 0Z"/><path transform="rotate(-44)" d="M0 0C-4 -9 -4.5 -23 0 -31C4.5 -23 4 -9 0 0Z"/><path transform="rotate(-22)" d="M0 0C-4 -9 -4.5 -24 0 -33C4.5 -24 4 -9 0 0Z"/><path d="M0 0C-4 -9 -4.5 -25 0 -34C4.5 -25 4 -9 0 0Z"/><path transform="rotate(22)" d="M0 0C-4 -9 -4.5 -24 0 -33C4.5 -24 4 -9 0 0Z"/><path transform="rotate(44)" d="M0 0C-4 -9 -4.5 -23 0 -31C4.5 -23 4 -9 0 0Z"/><path transform="rotate(66)" d="M0 0C-4 -9 -4.5 -21 0 -29C4.5 -21 4 -9 0 0Z"/>
-        </g>
-        <path d="M0 -3V-28M-12 -3L-19 -26M12 -3L19 -26" stroke="var(--bamboo-dark)" stroke-width=".4" fill="none" opacity=".7"/>
-        <circle cx="0" cy="3" r="3.4" fill="var(--bun)" stroke="var(--bun-line)" stroke-width=".8"/>
-        <path d="M0 9C-3 13 -3 17 -2 20M0 9C1 14 1 18 2 21" stroke="var(--seal)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-      </g>
-      <g id="arm">
-        <path d="M22 -102 C48 -94 62 -77 60 -63 C52 -57 37 -62 24 -73Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
-        <path d="M27 -97C42 -91 52 -80 56 -68M30 -90C41 -86 48 -78 52 -70" stroke="var(--m2)" stroke-width=".8" fill="none" opacity=".8"/>
-        <path d="M61 -67C58 -58 49 -57 43 -62" stroke="var(--bamboo)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-        <g transform="translate(56 -70)">
-          <rect x="0" y="-6" width="40" height="12" rx="3" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width="1"/>
-          <path d="M3.5 -6V6M7 -6V6M10.5 -6V6M14 -6V6M17.5 -6V6M21 -6V6M24.5 -6V6M28 -6V6M31.5 -6V6M35 -6V6" stroke="var(--bamboo-dark)" stroke-width=".6" opacity=".8"/>
-          <rect x="8" y="-7.5" width="2.2" height="15" fill="var(--seal)"/><rect x="29" y="-7.5" width="2.2" height="15" fill="var(--seal)"/>
-          <g transform="translate(26 6)" fill="var(--scroll-paper)" stroke="var(--bamboo-dark)" stroke-width=".5">
-            <rect x="0" y="0" width="2.6" height="26"/><rect x="3.1" y="0" width="2.6" height="29"/><rect x="6.2" y="0" width="2.6" height="25"/><rect x="9.3" y="0" width="2.6" height="28"/><rect x="12.4" y="0" width="2.6" height="24"/>
-            <path d="M-.5 8H15.5M-.5 20H15.5" stroke="var(--seal)" stroke-width="1.1" fill="none"/>
-            <path d="M1.3 12v3M4.4 13v3M7.5 11v3M10.6 12v3M13.7 11v3" stroke="var(--scroll-ink)" stroke-width=".8" fill="none"/>
-          </g>
-          <circle cx="1" cy="0" r="4.4" fill="var(--bun)" stroke="var(--bun-line)" stroke-width=".8"/>
-        </g>
-      </g>
-      <path d="M-22 -104C-36 -106 -46 -98 -48 -88C-40 -90 -30 -92 -22 -94ZM-22 -96C-34 -97 -43 -91 -46 -83C-38 -85 -29 -86 -22 -87ZM22 -104C36 -106 46 -98 48 -88C40 -90 30 -92 22 -94ZM22 -96C34 -97 43 -91 46 -83C38 -85 29 -86 22 -87Z" fill="var(--m1)" stroke="var(--bamboo)" stroke-width=".9" stroke-linejoin="round"/>
-      <path d="M-12 -106C-8 -100 8 -100 12 -106" stroke="var(--bamboo)" stroke-width="2.4" fill="none"/>
-      <g id="beard">
-        <path d="M-9 -116 C-12 -98 -5 -84 0 -74 C5 -84 12 -98 9 -116 Z" fill="var(--beard)"/>
-        <path d="M-5 -110C-6 -98 -3 -86 0 -78M5 -110C6 -98 3 -86 0 -78M0 -112V-80M-8 -108C-9 -98 -6 -90 -3 -84M8 -108C9 -98 6 -90 3 -84" stroke="var(--m2)" stroke-width=".6" fill="none" opacity=".6"/>
-      </g>
-      <circle cx="0" cy="-130" r="25" fill="var(--bun)" stroke="var(--bun-line)" stroke-width="1.6"/>
-      <path d="M13 -149C27 -142 28 -118 15 -108C21 -121 21 -138 13 -149Z" fill="var(--bun-line)" opacity=".14"/>
-      <ellipse cx="-9" cy="-143" rx="7" ry="3" fill="var(--paper)" opacity=".35" transform="rotate(-25 -9 -143)"/>
-      <g fill="none" stroke="var(--bun-line)" stroke-width="1.3" stroke-linecap="round">
-        <path d="M0 -153 C-7 -142 -15 -138 -21 -134"/><path d="M0 -153 C-3 -142 -7 -136 -10 -130"/>
-        <path d="M0 -153 C3 -142 7 -136 10 -130"/><path d="M0 -153 C7 -142 15 -138 21 -134"/>
-        <path d="M0 -153C-9 -148 -18 -146 -24 -141M0 -153C9 -148 18 -146 24 -141" stroke-width=".9" opacity=".8"/>
-        <path class="eye" d="M-12 -127 q4 3 8 0"/><path class="eye" d="M4 -127 q4 3 8 0"/>
-        <path d="M-14 -133q5 -3.5 10 -1.2M4 -134.2q5 -2.3 10 1.2" stroke="var(--m1)" stroke-width="1.8"/>
-        <path d="M-12 -116 C-6 -120 -2 -118 0 -116 C2 -118 6 -120 12 -116" stroke="var(--m1)" stroke-width="1.6"/>
-        <path d="M-12 -116C-16 -113 -18 -109 -17.5 -104M12 -116C16 -113 18 -109 17.5 -104" stroke="var(--m1)" stroke-width=".9"/>
-      </g>
-      <path d="M-24.2 -136C-10 -143 10 -143 24.2 -136" stroke="var(--seal)" stroke-width="3.2" fill="none"/>
-      <circle cx="-23" cy="-136" r="3" fill="var(--seal)"/>
-      <path d="M-23 -136C-32 -135 -37 -129 -41 -121M-23 -136C-33 -139 -39 -135 -45 -133" stroke="var(--seal)" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <circle cx="-15" cy="-121" r="3.5" fill="var(--petal)" opacity=".45"/><circle cx="15" cy="-121" r="3.5" fill="var(--petal)" opacity=".45"/>
-      <circle cx="0" cy="-156" r="4.5" fill="var(--bun-line)"/>
-      <path d="M-9 -157.5H9" stroke="var(--bamboo)" stroke-width="2" stroke-linecap="round"/><circle cx="-9.5" cy="-157.5" r="1.4" fill="var(--bamboo)"/><circle cx="9.5" cy="-157.5" r="1.4" fill="var(--bamboo)"/>
-    </g>
+    </g></g>
     <g id="petals"></g>
   </svg>
   <div class="bubble" id="bubble" role="status"><span id="bubble-q"></span><small id="bubble-src"></small></div>
@@ -465,7 +293,6 @@ footer p { max-width: 42rem; margin-bottom: .75rem; }
         <title id="army-title">Rows of bun soldiers march in behind a banner. Bun Tsu walks the ranks with a lantern and unmasks colrs, an impostor of colors; finds a soldier carrying a key labelled postinstall; and strikes out chalk@5.6.1, who falls.</title>
         <defs>
           <radialGradient id="lanternglow2"><stop offset="0" stop-color="var(--lantern)" stop-opacity=".5"/><stop offset="1" stop-color="var(--lantern)" stop-opacity="0"/></radialGradient>
-          <pattern id="arm-lam" width="4" height="6" patternUnits="userSpaceOnUse"><rect width="4" height="6" fill="var(--m1)"/><path d="M0 2.8H4M0 5.8H4M2 0V2.8M0 2.8V5.8M4 2.8V5.8" stroke="var(--m2)" stroke-width=".6" fill="none"/></pattern>
         </defs>
         <g id="battlemap" aria-hidden="true" fill="none" stroke="var(--ink-soft)" stroke-width="1.4" stroke-linecap="round" opacity=".17">
           <path d="M470 40C520 20 600 30 620 70C632 100 600 130 560 126C510 122 450 90 470 40Z"/><path d="M495 55C530 42 585 50 598 76C606 98 584 112 556 108C520 104 480 84 495 55Z"/><path d="M520 68C545 62 574 66 580 82C584 94 568 100 552 98C534 96 512 86 520 68Z"/>
@@ -478,35 +305,14 @@ footer p { max-width: 42rem; margin-bottom: .75rem; }
           <path d="M440 232h14v9h-14zM460 232h14v9h-14zM440 246h14v9h-14zM460 246h14v9h-14z M447 232v-12l10 4l-10 4"/>
           <path d="M300 40h14v9h-14zM320 40h14v9h-14zM340 40h14v9h-14z M307 40v-12l10 4l-10 4"/>
         </g>
-        <g id="banner" transform="translate(4 30)">
-          <path d="M0 0 V300" stroke="var(--bamboo-dark)" stroke-width="3"/>
-          <path d="M0 -2l-3.5 -3l3.5 -16l3.5 16z" fill="var(--m2)"/>
-          <path d="M-1 3c-6 2 -9 8 -7 16M-1 3c-3 4 -4 11 -2 17M1 -2c-3 -1 -5 0 -6 3" fill="none" stroke="var(--seal)" stroke-width="1.6" stroke-linecap="round"/>
-          <g id="flag"><path d="M2 4 C22 0 40 8 62 4 L53 26 L62 48 C40 52 22 44 2 48Z" fill="var(--seal)"/><path d="M7 9C22 6 38 12 54 9M7 43C22 46 38 40 54 43" fill="none" stroke="var(--scroll-paper)" stroke-width="1" stroke-dasharray="3 2" opacity=".75"/><path d="M12 49v7M22 50v8M32 49v7M42 48v8M52 46v6" stroke="var(--seal)" stroke-width="1.4" stroke-linecap="round"/><text x="30" y="36" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="26" fill="var(--scroll-paper)">包</text></g>
-          <g class="flutter"><path d="M2 66H40L34 78L40 90H2Z" fill="var(--m1)"/><path d="M5 70H34M5 86H34" stroke="var(--bamboo)" stroke-width=".8" fill="none" opacity=".8"/><text x="18" y="84" text-anchor="middle" font-family="Shippori Mincho, serif" font-weight="800" font-size="14" fill="var(--scroll-paper)">兵</text></g>
-          <path d="M-13 292h26l4 12h-34z" fill="var(--m2)"/><path d="M-9 296l3 4M0 295v6M7 296l-2 5" stroke="var(--m1)" stroke-width="1" fill="none"/>
-          <path d="M18 306L22 282M38 306L34 282" stroke="var(--bamboo-dark)" stroke-width="2.4" stroke-linecap="round"/>
-          <circle cx="28" cy="274" r="14" fill="var(--seal)" stroke="var(--bamboo-dark)" stroke-width="2.4"/><circle cx="28" cy="274" r="11" fill="none" stroke="var(--bamboo)" stroke-width="1.8" stroke-dasharray="1.3 3"/><circle cx="28" cy="274" r="5" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".8"/>
-        </g>
+        <g id="banner"><g transform="translate(-33 131) scale(.14)">
+          <image href="art/banner-pole.webp" x="232" y="25" width="90" height="1485"/>
+          <image id="flag" href="art/banner-flag.webp" x="293" y="270" width="643" height="516"/>
+        </g></g>
         <g id="ranks"></g>
         <g id="inspector" transform="translate(-60 392)">
-          <circle id="lantern-light" cx="26" cy="-22" r="70" fill="url(#lanternglow2)"/>
-          <path d="M-9 0h8v3h-9zM1 0h8v3h-8z" fill="var(--m2)"/>
-          <path d="M-14 0 C-12 -14 -10 -24 -7 -30 L7 -30 C10 -24 12 -14 14 0Z" fill="var(--m1)"/>
-          <path d="M-14 0L-13.2 -5C-5 -3 5 -3 13.2 -5L14 0Z" fill="url(#meander)"/>
-          <path d="M-6 -22L-8 -4M0 -22V-3M6 -22L8 -4" stroke="var(--m2)" stroke-width=".6" fill="none"/>
-          <rect x="-8" y="-24" width="16" height="3" fill="var(--seal)"/>
-          <path d="M-8 -21V-16" stroke="var(--seal)" stroke-width=".7"/><circle cx="-8" cy="-13" r="2" fill="var(--jade)"/>
-          <g transform="translate(-12 -16) rotate(-70)"><rect x="-8" y="-2" width="16" height="4" rx="1" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".6"/><path d="M-4 -2v4M0 -2v4M4 -2v4" stroke="var(--bamboo-dark)" stroke-width=".5"/></g>
-          <path d="M7 -26 L24 -30" stroke="var(--m1)" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="24" cy="-30" r="2.4" fill="var(--bun)"/>
-          <path d="M24 -30 V-38" stroke="var(--bamboo-dark)" stroke-width="1.5"/>
-          <g id="lantern"><rect x="19" y="-41" width="10" height="3" rx="1" fill="var(--bamboo-dark)"/><rect x="18" y="-38" width="12" height="15" rx="5" fill="var(--seal)"/><rect x="20" y="-36" width="8" height="11" rx="3" fill="var(--lantern)" opacity=".85"/><path d="M20 -32h8M20 -28h8" stroke="var(--seal)" stroke-width=".8"/><path d="M24 -23v5M22.5 -18h3" stroke="var(--seal)" stroke-width="1" stroke-linecap="round"/></g>
-          <circle cx="0" cy="-40" r="11" fill="var(--bun)" stroke="var(--bun-line)" stroke-width="1.2"/>
-          <path d="M0 -51 C-3 -46 -7 -44 -10 -42 M0 -51 C3 -46 7 -44 10 -42" stroke="var(--bun-line)" stroke-width="1" fill="none"/>
-          <path d="M-10.4 -44C-4 -47 4 -47 10.4 -44" stroke="var(--seal)" stroke-width="1.5" fill="none"/>
-          <circle cx="0" cy="-53" r="2.5" fill="var(--bun-line)"/>
-          <path d="M-4 -33 C-5 -26 -2 -22 0 -19 C2 -22 5 -26 4 -33Z" fill="var(--beard)"/>
+          <circle id="lantern-light" cx="14" cy="-53" r="70" fill="url(#lanternglow2)"/>
+          <image href="art/inspector.webp" x="-21" y="-66" width="41.4" height="66"/>
         </g>
       </svg>
       <div>
@@ -532,22 +338,13 @@ footer p { max-width: 42rem; margin-bottom: .75rem; }
         <div class="field"><label for="typ">Package type</label><select id="typ"><option value="">Any package</option></select></div>
         <div class="consult-row">
           <button type="button" class="consult" id="consult">Consult Bun Tsu</button>
-          <svg class="incense" viewBox="0 0 52 92" aria-hidden="true">
-            <g id="smoke" fill="none" stroke="var(--ink-soft)" stroke-width="1.8" stroke-linecap="round" opacity=".85">
-              <path class="wisp" d="M26 52 C20 44 32 38 26 30 C20 22 32 16 26 6"/>
-              <path class="wisp" d="M26 52 C32 44 20 38 26 30 C32 22 20 16 26 6"/>
+          <svg class="incense" viewBox="0 -150 274 503" aria-hidden="true">
+            <g id="smoke" fill="none" stroke="var(--ink-soft)" stroke-width="9" stroke-linecap="round" opacity=".7">
+              <path class="wisp" d="M137 2 C118 -24 156 -44 137 -70 C118 -96 156 -116 137 -146"/>
+              <path class="wisp" d="M137 2 C156 -24 118 -44 137 -70 C156 -96 118 -116 137 -146"/>
             </g>
-            <path d="M26 52 V70" stroke="var(--bamboo-dark)" stroke-width="2"/>
-            <path d="M19 59 L17.5 71M33 57 L34.5 71" stroke="var(--bamboo-dark)" stroke-width="1.4"/>
-            <circle cx="19" cy="59" r="1.1" fill="var(--seal)" opacity=".8"/><circle cx="33" cy="57" r="1.1" fill="var(--seal)" opacity=".8"/>
-            <circle id="ember" cx="26" cy="52" r="2.2" fill="var(--seal)"/>
-            <path d="M12 71 C16 66 36 66 40 71Z" fill="var(--m2)"/>
-            <path d="M12 72 V62 H16.5 V72 M40 72 V62 H35.5 V72" fill="none" stroke="var(--bamboo-dark)" stroke-width="2.2" stroke-linejoin="round"/>
-            <path d="M7 72 H45 C45 80 40 85 34 86 H18 C12 85 7 80 7 72Z" fill="var(--m1)"/>
-            <path d="M9 76.5 H43 V82 H9Z" fill="url(#fretjade)"/>
-            <path d="M18 86 L14.5 91.5 M34 86 L37.5 91.5 M26 86 V91.5" stroke="var(--bamboo-dark)" stroke-width="3.2" stroke-linecap="round"/>
-            <circle cx="14" cy="82" r="1.9" fill="var(--bamboo)"/><circle cx="38" cy="82" r="1.9" fill="var(--bamboo)"/>
-            <path d="M4 70 h44 v4 h-44z" fill="var(--bamboo-dark)"/><path d="M6 72h40" stroke="var(--bamboo)" stroke-width=".7" stroke-dasharray="1.5 2.5"/>
+            <image href="art/ding.webp" width="274" height="353"/>
+            <circle id="ember" cx="137" cy="4" r="4" fill="var(--seal)"/>
           </svg>
         </div>
       </div>
@@ -647,45 +444,22 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
 <footer>
   <svg class="rest" viewBox="0 0 1200 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <circle id="moon" cx="980" cy="70" r="30" fill="var(--sun)" opacity=".5"/>
-    <use class="m3" href="#xy" transform="translate(944 74) scale(2.8 1.3)" opacity=".5"/>
-    <path d="M920 60C960 56 1000 58 1040 64" fill="none" stroke="var(--m2)" stroke-width="1" stroke-linecap="round" opacity=".5"/>
+    <image class="paint far" href="art/far.webp" x="0" y="34" width="1200" height="485"/>
     <path class="m3" d="M-10 180 C120 130 200 120 300 150 C380 172 460 120 560 128 C660 136 720 170 820 160 C920 150 1020 120 1210 150 V250 H-10Z" opacity=".6"/>
-    <g style="color:var(--m2)" opacity=".75">
-      <use href="#tower" transform="translate(560 130) scale(.55)"/>
-      <path d="M470 150C500 134 530 126 556 128" fill="none" stroke="currentColor" stroke-width="3.4"/>
-      <path transform="translate(0 -2.6)" d="M470 150C500 134 530 126 556 128" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="2.5 2.8"/>
-      <use href="#tent" transform="translate(770 166)"/><use href="#tent" transform="translate(796 164) scale(.8)"/><use href="#tent" transform="translate(818 165)"/><use href="#tent" transform="translate(846 162) scale(.85)"/><use href="#tent" transform="translate(872 160)"/>
-      <use href="#tuft" transform="translate(120 142) scale(.9)"/><use href="#tuft" transform="translate(140 146) scale(.7)"/><use href="#tuft" transform="translate(1100 134) scale(.9)"/>
-    </g>
     <circle cx="840" cy="168" r="22" fill="url(#lanternglow)"/><circle cx="840" cy="168" r="1.8" fill="var(--seal)"/>
-    <g filter="url(#soft)" opacity=".7"><ellipse class="mist" cx="400" cy="178" rx="300" ry="9"/><ellipse class="mist" cx="900" cy="192" rx="260" ry="8"/></g>
+    <g opacity=".7"><ellipse class="mist fade" cx="400" cy="178" rx="340" ry="49"/><ellipse class="mist fade" cx="900" cy="192" rx="300" ry="48"/></g>
     <path class="m2" d="M-10 210 C140 180 260 200 380 190 C520 178 600 200 720 196 C860 192 980 176 1210 196 V250 H-10Z"/>
-    <g style="color:var(--m1)" opacity=".55"><use href="#tuft" transform="translate(150 188)"/><use href="#tuft" transform="translate(172 192) scale(.8)"/><use href="#tuft" transform="translate(690 196) scale(1.1)"/><use href="#tuft" transform="translate(930 183)"/><use href="#tuft" transform="translate(1110 186) scale(1.1)"/></g>
     <path class="m1" d="M-10 226 C200 214 420 230 600 224 C820 216 1000 228 1210 220 V250 H-10Z"/>
-    <g id="camplight" transform="translate(110 0)">
+    <g id="camplight" transform="translate(170 0)">
       <circle cx="500" cy="200" r="46" fill="url(#lanternglow)"/>
       <path d="M500 230V206" stroke="var(--bamboo-dark)" stroke-width="2"/>
       <rect x="494" y="188" width="12" height="3" rx="1" fill="var(--bamboo-dark)"/><rect x="493" y="191" width="14" height="16" rx="5.5" fill="var(--seal)"/><rect x="495.5" y="193" width="9" height="12" rx="3.5" fill="var(--lantern)" opacity=".85"/><path d="M495 197h10M495 201h10" stroke="var(--seal)" stroke-width=".8"/><path d="M500 207v5" stroke="var(--seal)" stroke-width="1.2"/>
     </g>
-    <g id="sleeper" transform="translate(400 203) scale(1.6)">
-      <path d="M-66 12C-30 8 50 8 84 12L88 17C50 21 -30 21 -70 17Z" fill="var(--bamboo)" opacity=".6"/>
-      <path d="M-62 14.5H82M-66 17H84" stroke="var(--bamboo-dark)" stroke-width=".6" stroke-dasharray="2 2.5" fill="none" opacity=".8"/>
-      <path d="M-50 12 C-46 -6 -20 -14 10 -12 C40 -10 58 0 60 12Z" fill="var(--m1)"/>
-      <path d="M-30 -8C-28 0 -26 6 -26 11M-6 -12C-5 -4 -4 4 -4 11M20 -11C22 -4 24 3 25 11M44 -4C46 2 47 7 48 11" stroke="var(--m2)" stroke-width=".8" fill="none"/>
-      <path d="M-49 12L-48 8C-20 4 30 4 59 8L60 12Z" fill="url(#meander)"/>
-      <path d="M-30 -8 C-26 -26 -8 -34 12 -32 C30 -30 40 -20 42 -10 C20 -6 -10 -6 -30 -8Z" fill="var(--m1)" stroke="var(--m2)" stroke-width="1"/>
-      <path d="M-14 -26C-12 -20 -10 -14 -9 -8M2 -30C4 -22 6 -14 7 -8M18 -29C20 -22 22 -16 23 -10M32 -24C34 -19 35 -14 36 -10" stroke="var(--m2)" stroke-width=".9" fill="none" opacity=".9"/>
-      <rect x="-6" y="-20" width="30" height="4" rx="1.5" fill="var(--seal)"/>
-      <path d="M-54 -4C-48 -7 -22 -7 -16 -4L-18 4H-52Z" fill="var(--bamboo-dark)"/><path d="M-50 -1H-20" stroke="var(--bamboo)" stroke-width=".8" opacity=".8"/>
-      <circle cx="-34" cy="-22" r="15" fill="var(--bun)" stroke="var(--bun-line)" stroke-width="1.4"/>
-      <path d="M-48 -26 C-42 -28 -38 -32 -36 -37 M-48 -26 C-42 -22 -40 -20 -38 -16 M-48 -26 H-40" stroke="var(--bun-line)" stroke-width="1" fill="none"/>
-      <circle cx="-50" cy="-26" r="3" fill="var(--bun-line)"/>
-      <path d="M-34 -22 q3 2 6 0 M-26 -22 q3 2 6 0" stroke="var(--bun-line)" stroke-width="1.2" fill="none" transform="translate(-6 0)"/>
-      <path d="M-28 -12 C-22 -4 -14 -2 -8 -4" stroke="var(--beard)" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path d="M-30 15H58" stroke="var(--m2)" stroke-width="3.2" stroke-linecap="round"/><path d="M-30 15H58" stroke="var(--m1)" stroke-width="1.6"/><path d="M-8 15h3M20 15h3M50 15h3" stroke="var(--bamboo)" stroke-width="3.4"/>
-      <path d="M-30 15H-42" stroke="var(--bamboo-dark)" stroke-width="3.4" stroke-linecap="round"/><circle cx="-43" cy="15" r="2.2" fill="var(--seal)"/><path d="M-44 16q-5 3 -8 9" stroke="var(--seal)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-      <g transform="translate(66 5)"><rect width="22" height="8" rx="2.5" fill="var(--bamboo)" stroke="var(--bamboo-dark)" stroke-width=".8"/><path d="M3.5 0V8M7 0V8M10.5 0V8M14 0V8M17.5 0V8" stroke="var(--bamboo-dark)" stroke-width=".5"/><rect x="5" y="-1" width="1.6" height="10" fill="var(--seal)"/><rect x="15" y="-1" width="1.6" height="10" fill="var(--seal)"/></g>
-      <g id="zzz" font-family="Shippori Mincho, serif" font-weight="700" fill="var(--ink-soft)"><text x="-28" y="-44" font-size="14">z</text><text x="-18" y="-58" font-size="18">z</text><text x="-4" y="-76" font-size="22">z</text></g>
+    <g id="sleeper"><g transform="translate(329 54) scale(.184)">
+      <image id="sleeper-steam" href="art/sleeper-steam.webp" x="131" y="91" width="262" height="239"/>
+      <image id="sleeper-body" href="art/sleeper-body.webp" x="7" y="286" width="1521" height="647"/>
+    </g>
+      <g id="zzz" transform="translate(436 106)" font-family="Shippori Mincho, serif" font-weight="700" fill="var(--ink-soft)"><text x="0" y="0" font-size="14">z</text><text x="11" y="-15" font-size="18">z</text><text x="26" y="-34" font-size="22">z</text></g>
     </g>
   </svg>
   <div class="text">
@@ -752,7 +526,7 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
     if (animate) {
       G.timeline()
         .to("#general", { y: "-=6", duration: .14, yoyo: true, repeat: 1, ease: "power1.out" })
-        .fromTo("#steam path", { y: 0, opacity: .9 }, { y: -22, opacity: 0, duration: .9, stagger: .08, ease: "power1.out" }, 0)
+        .fromTo("#steam", { y: 0, opacity: .9 }, { y: -110, opacity: 0, duration: .9, ease: "power1.out" }, 0)
         .fromTo(bubble, { opacity: 0, y: 10, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: .35, ease: "back.out(2)" }, .1);
     } else bubble.style.opacity = 1;
     bubbleTimer = setTimeout(() => animate ? G.to(bubble, { opacity: 0, y: -6, duration: .4 }) : (bubble.style.opacity = 0), 6500);
@@ -771,39 +545,21 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
   const soldiers = [];
   const SPECIAL = [IMPOSTOR, KEYMAN, FATAL];
   const kindOf = (r, c) => SPECIAL.some(([a, b]) => a === r && b === c) ? 0 : r === 0 && (c === 3 || c === 8) ? 6 : (r * 3 + c * 5) % 6;
-  const WEAPON = [
-    `<line class="spear" x1="17" y1="10" x2="17" y2="-52"/><path d="M17 -58l-3 7h6z" fill="var(--m2)"/><path d="M17 -50q-3 3 -1 7" stroke="var(--seal)" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
-    `<line class="spear" x1="17" y1="10" x2="17" y2="-52"/><path d="M17 -60l-2.5 8h5z" fill="var(--m2)"/><path d="M17 -47q13 -2 15 9q-9 -5 -15 -3z" fill="var(--m2)"/><path d="M17 -50q-4 4 -1 10" stroke="var(--seal)" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
-    `<line class="spear" x1="17" y1="10" x2="17" y2="-78"/><path d="M17 -83l-2 5h4z" fill="var(--m2)"/><path class="flutter" d="M18 -76H38L33 -69L38 -62H18Z" fill="var(--seal)"/><text x="28" y="-66" font-size="8" font-weight="800" text-anchor="middle" font-family="Shippori Mincho, serif" fill="var(--scroll-paper)">兵</text>`
-  ];
-  const SHIELD = `<path d="M-27 -4h17v24q-8.5 9 -17 0z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width="1"/><circle cx="-18.5" cy="8" r="3.4" fill="none" stroke="var(--seal)" stroke-width="1.2"/><circle cx="-18.5" cy="8" r=".9" fill="var(--seal)"/><path d="M-26 0h15" stroke="var(--bamboo-dark)" stroke-width=".7"/>`;
-  const HEAD = [
-    `<path d="M-11.6 -17.5C-4 -21 4 -21 11.6 -17.5" stroke="var(--seal)" stroke-width="2.2" fill="none"/><path d="M11 -18q4 1 5 5M11 -18q5 -1 7 2" stroke="var(--seal)" stroke-width="1.2" fill="none"/>`,
-    `<path d="M-11 -19C-10 -31 10 -31 11 -19C5 -22 -5 -22 -11 -19Z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width=".7"/><path d="M-11 -19l-1 8M11 -19l1 8" stroke="var(--m2)" stroke-width="2"/><path d="M0 -30q-3 -5 1 -9" stroke="var(--seal)" stroke-width="2" fill="none" stroke-linecap="round"/>`,
-    `<path d="M-12.5 -17C-12 -30 12 -30 12.5 -17Z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width=".7"/><path d="M-14 -17h28" stroke="var(--bamboo-dark)" stroke-width="1.6" stroke-linecap="round"/><circle cx="0" cy="-29" r="1.8" fill="var(--seal)"/>`
-  ];
+  // painted soldiers: [file, crop width, crop height] at 0.1 svg units per source pixel, feet on y = 38
+  const KIND = [["spear", 321, 794], ["halberd", 342, 788], ["shield", 294, 667]];
   const soldierMarkup = k => {
-    const shield = k === 4 || k === 5, h = k === 2 || k === 3 ? 1 : shield ? 2 : 0;
-    return WEAPON[k === 6 ? 2 : k === 2 || k === 3 ? 1 : 0]
-      + `<path class="robe" d="M-14 34 C-12 18 -10 4 -8 -2 L8 -2 C10 4 12 18 14 34Z"/>`
-      + `<path d="M-9 -1L9 -1C10 5 11 11 11.6 17H-11.6C-11 11 -10 5 -9 -1Z" fill="url(#arm-lam)"/><rect x="-11.6" y="16" width="23.2" height="3.2" fill="var(--seal)"/>`
-      + `<path d="M-6 19L-7 34M0 19V34M6 19L7 34" stroke="var(--m2)" stroke-width=".7" fill="none"/><path d="M-9 34h7v4h-8zM2 34h7v4h-8z" fill="var(--m2)"/>`
-      + `<path d="M-9 -2C-15 -1 -17 4 -16 8C-12 6 -9 4 -8 1ZM9 -2C15 -1 17 4 16 8C12 6 9 4 8 1Z" fill="var(--m2)" stroke="var(--bamboo-dark)" stroke-width=".6"/>`
-      + `<path d="M8 1C13 3 16 6 17 9" stroke="var(--m1)" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="17" cy="8" r="2.3" fill="var(--bun)"/>`
-      + (shield ? SHIELD : "")
-      + `<circle class="head" cx="0" cy="-14" r="12"/><path class="pleat" d="M0 -26 C-3 -21 -7 -19 -10 -17 M0 -26 C3 -21 7 -19 10 -17 M0 -26 V-18"/>`
-      + HEAD[h]
-      + `<path d="M-5.5 -12.5q1.8 1.8 3.6 0M1.9 -12.5q1.8 1.8 3.6 0" stroke="var(--bun-line)" stroke-width=".9" fill="none" stroke-linecap="round"/>`;
+    const [n, w, h] = KIND[k === 2 || k === 3 || k === 6 ? 1 : k === 4 || k === 5 ? 2 : 0];
+    return `<image href="art/soldier-${n}.webp" x="${-w / 20}" y="${38 - h / 10}" width="${w / 10}" height="${h / 10}"/>`;
   };
   for (let r = 0; r < ROWS; r++) {
-    const row = el("g", { class: "row", transform: `translate(${(r % 2) * 22 + 40} ${70 + r * 78})` }, ranks);
+    const row = el("g", { class: "row", transform: `translate(${(r % 2) * 22 + 70} ${70 + r * 78})` }, ranks);
     for (let c = 0; c < COLS; c++) {
       const g = el("g", { class: "soldier", transform: `translate(${40 + c * 54} 0)` }, row);
       const inner = el("g", { transform: `scale(${0.92 + ((r * 7 + c * 3) % 5) * 0.02})` }, g);
       el("ellipse", { cx: 0, cy: 37, rx: 15, ry: 3, fill: "var(--m2)", opacity: .22 }, inner);
       const body = el("g", { class: "body" }, inner);
       body.insertAdjacentHTML("beforeend", soldierMarkup(kindOf(r, c)));
-      const mask = el("circle", { class: "mask", cx: 0, cy: -14, r: 12.5 }, body);
+      const mask = el("circle", { class: "mask", cx: -1, cy: -20, r: 12 }, body);
       soldiers.push({ g, inner, body, mask, r, c });
     }
   }
@@ -815,7 +571,7 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
   const keyTag = tag(keyman, "postinstall", -66);
   const fatalTag = tag(fatal, "chalk@5.6.1", 56);
   const strike = el("line", { x1: -40, y1: 51, x2: 40, y2: 51, stroke: "var(--seal)", "stroke-width": 2, opacity: 0 }, fatal.inner);
-  const colX = s => (s.r % 2) * 22 + 40 + 40 + s.c * 54;  // soldier x in svg units
+  const colX = s => (s.r % 2) * 22 + 70 + 40 + s.c * 54;  // soldier x in svg units
 
   /* ---------- Oracle ---------- */
   const vec = $("#vec"), typ = $("#typ");
@@ -894,7 +650,6 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
     .from("#far", { y: 60, opacity: 0, duration: 1.6 }, .1)
     .from("#mid", { y: 80, opacity: 0, duration: 1.6 }, .3)
     .from("#near", { y: 120, duration: 1.4 }, .45)
-    .from("#pine", { y: 120, duration: 1.4 }, .5)
     .from("#general", { y: 40, opacity: 0, duration: 1.1 }, 1.0)
     .from("#wordmark", { clipPath: "inset(0 100% 0 0)", duration: 1.2, ease: "power2.inOut" }, .9)
     .to(swash, { strokeDashoffset: 0, duration: .9, ease: "power2.inOut" }, 1.8)
@@ -906,13 +661,10 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
   G.to("#halo", { attr: { r: 210 }, duration: 4, repeat: -1, yoyo: true, ease: "sine.inOut" });
   G.to("#mistA", { x: 60, duration: 14, repeat: -1, yoyo: true, ease: "sine.inOut" });
   G.to("#mistB", { x: -80, duration: 18, repeat: -1, yoyo: true, ease: "sine.inOut" });
-  G.fromTo("#steam path", { y: 0, opacity: 0 }, { y: -12, opacity: .8, duration: 1.8, repeat: -1, stagger: .5, ease: "sine.inOut", yoyo: true });
-  G.to("#general .eye", { scaleY: .15, transformOrigin: "50% 50%", duration: .08, repeat: -1, repeatDelay: 4.2, yoyo: true });
-  G.to("#arm", { rotate: -6, transformOrigin: "0% 0%", duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
-  G.to("#robe", { skewX: 2.5, transformOrigin: "50% 100%", duration: 2.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
-  G.to("#beard", { skewX: 8, transformOrigin: "50% 0%", duration: 1.6, repeat: -1, yoyo: true, ease: "sine.inOut" });
-  G.to("#sash-tail", { attr: { d: "M14 -76 C24 -62 22 -50 32 -42" }, duration: 1.4, repeat: -1, yoyo: true, ease: "sine.inOut" });
-  G.to("#pine .needles", { x: 3, duration: 3, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.fromTo("#steam", { y: 30, opacity: 0 }, { y: -50, opacity: .85, duration: 2.4, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#gfig", { scaleY: 1.012, transformOrigin: "50% 100%", duration: 2.6, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#gsash", { rotate: 8, transformOrigin: "0% 0%", duration: 1.5, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#hflag", { skewY: 4, scaleX: .94, transformOrigin: "0% 50%", duration: 1.1, repeat: -1, yoyo: true, ease: "sine.inOut" });
   $$(".star").forEach(s => G.to(s, { opacity: rand(.1, .5), duration: rand(1, 3), repeat: -1, yoyo: true, delay: rand(0, 3), ease: "sine.inOut" }));
   petalEls.forEach(p => {
     const fall = () => {
@@ -922,12 +674,12 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
     };
     G.delayedCall(rand(0, 8), fall);
   });
-  $$("#flock .wing").forEach((w, i) => G.to(w, { scaleY: -.6, transformOrigin: "30% 100%", duration: .45 + i * .05, repeat: -1, yoyo: true, ease: "sine.inOut", delay: i * .12 }));
+  $$("#flock .crane").forEach((c, i) => G.to(c, { y: -10, rotate: -4, transformOrigin: "50% 50%", duration: 1.3 + i * .3, repeat: -1, yoyo: true, ease: "sine.inOut", delay: i * .4 }));
   G.timeline({ repeat: -1, repeatDelay: 7, delay: 3 })
     .fromTo("#flock", { x: -160, y: 190 }, { x: 1360, y: 110, duration: 20, ease: "none" });
 
   G.timeline({ scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } })
-    .to("#far", { y: 40 }, 0).to("#mid", { y: 80 }, 0).to("#near, #general, #pine", { y: 140 }, 0).to("#sunwrap", { y: 90 }, 0);
+    .to("#far", { y: 40 }, 0).to("#mid", { y: 80 }, 0).to("#near, #general", { y: 140 }, 0).to("#sunwrap", { y: 90 }, 0);
 
   /* ---------- Brush dividers paint themselves ---------- */
   $$(".brush-rule path").forEach(p => {
@@ -951,7 +703,6 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
   G.set([imp.mask, impTag, ghostTag, key, keyTag, fatalTag, strike], { opacity: 0 });
   G.set(".omen", { opacity: .25 });
   G.to("#flag", { skewY: 4, scaleX: .94, transformOrigin: "0% 50%", duration: .9, repeat: -1, yoyo: true, ease: "sine.inOut" });
-  G.to("#lantern", { rotate: 8, transformOrigin: "50% 0%", duration: 1, repeat: -1, yoyo: true, ease: "sine.inOut" });
   G.to("#lantern-light", { attr: { r: 78 }, opacity: .8, duration: .7, repeat: -1, yoyo: true, ease: "sine.inOut" });
   const walk = (x, d) => [{ x, duration: d, ease: "power1.inOut" }];
   const step = G.timeline({ paused: true, repeat: -1 }).to("#inspector", { y: "-=3", duration: .2, yoyo: true, repeat: 1, ease: "sine.inOut" });
@@ -1012,8 +763,24 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
 
   /* ---------- Footer: the general rests ---------- */
   G.fromTo("#zzz text", { y: 6, opacity: 0 }, { y: -8, opacity: 1, duration: 1.4, stagger: .5, repeat: -1, repeatDelay: .4, ease: "sine.out" });
-  G.to("#sleeper", { scaleY: 1.02, transformOrigin: "50% 100%", duration: 1.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.to("#sleeper-body", { scaleY: 1.015, transformOrigin: "50% 100%", duration: 1.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
+  G.fromTo("#sleeper-steam", { y: 50, opacity: 0 }, { y: -60, opacity: .8, duration: 2.6, repeat: -1, yoyo: true, ease: "sine.inOut" });
   G.from("#moon", { scrollTrigger: { trigger: "footer", start: "top 90%", once: true }, attr: { cy: 160 }, opacity: 0, duration: 2, ease: "power2.out" });
+
+  /* ---------- Off-screen sections stop animating ---------- */
+  const held = new Map();
+  const zoneOf = t => {
+    const x = t.targets ? t.targets()[0] : t.getChildren(true, true, false).find(c => c.targets)?.targets()[0];
+    return x?.closest?.("header, section, footer");
+  };
+  const watcher = new IntersectionObserver(entries => entries.forEach(({ target: zone, isIntersecting }) => {
+    zone.classList.toggle("asleep", !isIntersecting);
+    if (isIntersecting) { (held.get(zone) ?? []).forEach(t => t.resume()); held.delete(zone); return; }
+    const running = G.globalTimeline.getChildren(false, true, true).filter(t => !t.paused() && zoneOf(t) === zone);
+    running.forEach(t => t.pause());
+    held.set(zone, [...(held.get(zone) ?? []), ...running]);
+  }), { rootMargin: "120px 0px" });
+  $$("header.hero, main section, body > section, footer").forEach(z => watcher.observe(z));
 })();
 </script>
 </body>
