@@ -100,10 +100,10 @@ bunx bun-tsu init            # writes [install.security] scanner = "@wisdomousai
 
 From then on, `bun install`, `bun add` and friends pass before him:
 
-- **fatal** (install stops): any version OSV.dev lists as malware, and exact versions from the built-in list of documented compromises (event-stream 3.3.6, ua-parser-js 0.7.29, chalk 5.6.1 / debug 4.4.2, ...).
+- **fatal** (install stops): any version OSV.dev lists as malware, any new arrival (not yet in `bun.lock`) that Socket's free API blocks, and exact versions from the built-in list of documented compromises (event-stream 3.3.6, ua-parser-js 0.7.29, chalk 5.6.1 / debug 4.4.2, ...).
 - **warn** (prompt in a terminal, cancel in CI): new or direct dependencies whose names are one letter from a popular package, and new arrivals (not yet in `bun.lock`) that were published in the last 72 hours, dropped provenance, or added an install script the previous release didn't have.
 - With `BUN_TSU_STRICT=1`, also warns on critical advisories, `latest` / `*` and git or URL sources.
-- `BUN_TSU_OFFLINE=1` skips the network. If OSV can't be reached, the install continues with only the built-in list, and a line says so.
+- `BUN_TSU_OFFLINE=1` skips the network; `BUN_TSU_SOCKET=0` skips only Socket. If OSV can't be reached, the install continues with only the built-in list, and a line says so.
 - Messages are plain instructions. In the prophecy style each starts with an omen, and a line of art follows the scan; `BUN_TSU_QUIET=1` silences the art.
 
 **3. In front of your coding agent (Claude Code plugin)**
@@ -268,12 +268,15 @@ The style applies to the CLI report, the Bun install scanner's messages and the 
   - the package is under 30 days old;
   - the resolved version is a major behind latest;
   - the package has had no release in two years.
+- Every resolved version against [Socket](https://socket.dev)'s free firewall API, which analyses package contents and can flag malware before anyone files a report. Bun Tsu keeps the alerts Socket's default policy blocks or warns on. Socket is one request per version, 16 at a time, and runs in the full scan, `check` and the install scanner, not in the session-start hook.
 - Literal tokens in `.npmrc` or `bunfig.toml`. Values are never printed.
 - `.env` files git isn't ignoring.
 - Dependency-confusion risk when a custom registry is configured: unscoped names that are free on public npm.
 - Optionally `bun audit` (`--audit`).
 
-Registry and OSV responses are cached for an hour (advisory details for a day) in `~/.cache/bun-tsu`, or `BUN_TSU_CACHE`. `BUN_TSU_REGISTRY` points the registry checks at a mirror.
+Registry, OSV and Socket responses are cached for an hour (advisory details for a day) in `~/.cache/bun-tsu`, or `BUN_TSU_CACHE`. `BUN_TSU_REGISTRY` points the registry checks at a mirror.
+
+What leaves your machine: package names and exact versions, sent to the npm registry, api.osv.dev and firewall-api.socket.dev. No file contents, tokens or project names. `BUN_TSU_SOCKET=0` keeps them away from Socket; `BUN_TSU_OFFLINE=1` keeps them on your machine.
 
 Each finding carries an attack **vector** (typosquat, install-script, leaked-secrets, ...). Each package gets a purpose **type** (auth, crypto, web3, http, build, database, ...). The scroll's imagery and closing quote come from both.
 
@@ -291,7 +294,7 @@ console.log(prophesy(report).verses.map(v => v.omen));
 
 A [wisdomous](https://wisdomous.ai/vibecoding) vibecoding project.
 
-MIT. Bun Tsu catches known malware, guessed names and the release patterns of past npm attacks. It does not analyse package code, so a new attack with none of those signs gets through. Use it next to, not instead of, a code-analysing scanner such as Socket's.
+MIT. Bun Tsu catches known malware, guessed names and the release patterns of past npm attacks. Its only look at package code is Socket's free API, which covers Socket's default policy and nothing org-specific. For a team, Socket's own scanner with an organization token, or a similar paid service, goes further.
 
 ## Agent skill only
 

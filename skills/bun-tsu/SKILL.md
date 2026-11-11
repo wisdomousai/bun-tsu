@@ -13,7 +13,7 @@ Bun Tsu has three modes. Pick the mode from the request.
 
 All modes use `bunx @wisdomousai/bun-tsu` and need Bun 1.3 or later. If `bunx` is missing, tell the user to install Bun from https://bun.sh and stop. Do not reproduce the checks by hand.
 
-The checks query OSV.dev and the npm registry. Without network access they fall back to a small built-in list; say so when the output reports `intel-unavailable` or `offline`.
+The checks query OSV.dev, Socket and the npm registry. Without network access they fall back to a small built-in list; say so when the output reports `intel-unavailable` or `offline`.
 
 ## Guard
 

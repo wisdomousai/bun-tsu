@@ -401,7 +401,7 @@ bunx @wisdomousai/bun-tsu --strict  <span class="d"># fail CI</span></pre>
             <rect x="8" y="58" width="48" height="4" fill="var(--m2)"/>
           </svg>
           <h3>Post him at the gate</h3>
-          <p>Bun’s security scanner hook runs him before every <code>bun install</code>. He stops versions OSV lists as malware and questions look-alike names and suspicious new releases.</p>
+          <p>Bun’s security scanner hook runs him before every <code>bun install</code>. He stops versions OSV lists as malware or Socket finds malicious, and questions look-alike names and suspicious new releases.</p>
 <pre>bun add -d @wisdomousai/bun-tsu
 bunx bun-tsu init
 <span class="d"># bunfig.toml</span>
@@ -469,7 +469,7 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
   <div class="text">
     <div class="wrap">
       <p>The general rests. Your lockfile does not.</p>
-      <p>Bun Tsu is a joke with a real scanner inside. Malware and advisories come from <a href="https://osv.dev">OSV.dev</a>, release history from the npm registry, and a small hand-checked list of documented compromises covers offline use. Sun Tzu lines are from Lionel Giles’ 1910 translation, in the public domain. Everything else is apocrypha.</p>
+      <p>Bun Tsu is a joke with a real scanner inside. Malware and advisories come from <a href="https://osv.dev">OSV.dev</a> and <a href="https://socket.dev">Socket</a>, release history from the npm registry, and a small hand-checked list of documented compromises covers offline use. Sun Tzu lines are from Lionel Giles’ 1910 translation, in the public domain. Everything else is apocrypha.</p>
       <p>A <a href="https://wisdomous.ai/vibecoding">wisdomous vibecoding</a> project. <a href="https://github.com/wisdomousai/bun-tsu">Source on GitHub</a>. MIT licensed.</p>
     </div>
   </div>

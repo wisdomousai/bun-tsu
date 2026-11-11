@@ -1,14 +1,14 @@
 // Checks package specs before they are installed: the `check` command and the agent hook.
 import { imitates, classify } from "./classify.ts";
 import { knownBad } from "./knownbad.ts";
-import { osv, packument, pool, weeklyDownloads } from "./registry.ts";
+import { osv, packument, pool, socket, socketFinding, weeklyDownloads } from "./registry.ts";
 import { resolveSpec, signals } from "./signals.ts";
 import { VECTOR, ORDER, type Finding, type Severity } from "./scout.ts";
 
 export type Verdict = "block" | "ask" | "note" | "ok";
 export type Checked = { spec: string; name: string; version?: string; verdict: Verdict; findings: Finding[] };
 
-const BLOCK = new Set(["known-compromise", "malicious-package", "unknown-package"]);
+const BLOCK = new Set(["known-compromise", "malicious-package", "unknown-package", "socket-malware", "socket-block"]);
 const LOCAL = /^(\.{0,2}\/|~|file:|link:|workspace:)/;
 const REMOTE = /^(git\+|git:|github:|gitlab:|bitbucket:|https?:)|^[\w.-]+\/[\w.-]+(#.*)?$/;
 
@@ -61,6 +61,12 @@ export async function check(specs: string[], opts: { customRegistry?: boolean } 
       for (const v of vulns) {
         if (v.malicious) { if (!hit) add("critical", "malicious-package", `${name}@${version}`, `${v.summary} (${v.id}).`, `Do not install ${name}@${version}.`, { url: v.url }); }
         else add(v.severity, "known-vuln", `${name}@${version}`, `${v.summary} (${v.id}).`, v.fixed ? `Use ${name}@${v.fixed} or later.` : "No fixed version is listed; see the advisory.", { url: v.url });
+      }
+      const key = `${name}@${version}`;
+      for (const a of (await socket([{ name, version }]))?.get(key) ?? []) {
+        const s = socketFinding(a, key);
+        if (s.category === "socket-malware" && findings.some(f => ["known-compromise", "malicious-package"].includes(f.category))) continue;
+        add(s.severity, s.category, key, s.detail, s.fix, { url: s.url });
       }
     }
     for (const f of findings) f.types = classify(f.imitates ?? name);

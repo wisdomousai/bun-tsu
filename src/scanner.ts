@@ -1,12 +1,13 @@
 // Bun Tsu as a Bun security scanner: add to bunfig.toml
 //   [install.security]
 //   scanner = "@wisdomousai/bun-tsu"   (the package root exports `scanner`)
-// Fatal: malware reported to OSV, and exact versions from the built-in list of documented compromises.
+// Fatal: malware reported to OSV, exact versions from the built-in list of documented compromises, and
+//        new arrivals that Socket's free API blocks (malware found in the package contents).
 // Warn: typosquat-looking names, and new arrivals (not yet in bun.lock) that were published in the last 72 hours,
 //       dropped provenance or added an install script.
 // Messages are plain instructions; the prophecy style (see lib/config.ts) adds an omen, the claudish style adds slop.
 // Env: BUN_TSU_STRICT=1 also warns on critical advisories, 'latest'/'*' and git/URL sources.
-//      BUN_TSU_OFFLINE=1 skips the network. BUN_TSU_QUIET=1 silences the art.
+//      BUN_TSU_OFFLINE=1 skips the network. BUN_TSU_SOCKET=0 skips Socket. BUN_TSU_QUIET=1 silences the art.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { knownBad } from "./lib/knownbad.ts";
@@ -14,7 +15,7 @@ import { imitates } from "./lib/classify.ts";
 import { quoteOfTheDay } from "./lib/quotes.ts";
 import { mini, c } from "./lib/art.ts";
 import { resolvedVersions } from "./lib/scout.ts";
-import { osv, packument, pool } from "./lib/registry.ts";
+import { osv, packument, pool, socket, socketFinding } from "./lib/registry.ts";
 import { signals } from "./lib/signals.ts";
 import { resolveStyle } from "./lib/config.ts";
 
@@ -62,6 +63,13 @@ export const scanner: Bun.Security.Scanner = {
         description: say(`${pkg.name} is requested as '${pkg.requestedRange || "*"}', which accepts any future release. Pin a version.`, `'${pkg.requestedRange || "*"}' is not a version. It is a prayer.`) });
       else if (strict && /^(github:|https?:|git)/.test(pkg.version)) push({ level: "warn", package: pkg.name, url: null,
         description: say(`${pkg.name} comes from ${pkg.version.split("#")[0]}, not the registry. Use a registry release or pin a full commit SHA.`, "Supplies from a roadside wagon carry no granary seal.") });
+    }
+
+    // Socket analyses package contents, so it can catch malware nobody has reported yet; ask about new arrivals only
+    const fresh = registry.filter(p => arriving(p) && !flagged.has(p.name));
+    for (const [key, alerts] of (await socket(fresh.map(p => ({ name: p.name, version: p.version })))) ?? []) for (const a of alerts) {
+      const s = socketFinding(a, key), name = key.slice(0, key.lastIndexOf("@"));
+      push({ level: a.block ? "fatal" : "warn", package: name, url: s.url, description: say(`${s.detail} ${s.fix}`, "A spy has read this one's letters, and they are not friendly.") });
     }
 
     // release history of new arrivals; on a first install everything is new, so then only direct deps

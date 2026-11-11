@@ -56,8 +56,12 @@ const MAL = { id: "MAL-2026-1", summary: "Malicious code in evil-pkg (npm)", aff
 const routes: Record<string, any> = {
   "registry.npmjs.org/widget": widget,
   "registry.npmjs.org/evil-pkg": { ...widget, name: "evil-pkg", "dist-tags": { latest: "1.0.0" }, versions: { "1.0.0": ver("1.0.0") }, time: { created: at(9000), "1.0.0": at(9000) } },
+  "registry.npmjs.org/sneaky": { ...widget, name: "sneaky", "dist-tags": { latest: "1.0.0" }, versions: { "1.0.0": ver("1.0.0") }, time: { created: at(9000), "1.0.0": at(9000) } },
   "api.osv.dev/v1/vulns/MAL-2026-1": MAL,
 };
+// Socket's firewall API answers one NDJSON line per package; only "sneaky" has an alert
+const socketLine = (purl: string) => JSON.stringify({ inputPurl: purl, alerts: purl === "pkg:npm/sneaky@1.0.0"
+  ? [{ type: "malware", severity: "critical", action: "error", props: { note: "Steals npm tokens on import." }, fix: { description: "Remove this package." } }] : [] });
 const realFetch = globalThis.fetch;
 beforeAll(() => {
   delete process.env.BUN_TSU_OFFLINE;
@@ -68,6 +72,7 @@ beforeAll(() => {
       const { queries } = JSON.parse(String(init!.body));
       return Response.json({ results: queries.map((q: any) => q.package.name === "evil-pkg" ? { vulns: [{ id: "MAL-2026-1" }] } : {}) });
     }
+    if (u.startsWith("firewall-api.socket.dev/purl/")) return new Response(socketLine(decodeURIComponent(u.slice(29))) + "\n");
     if (u.includes("api.npmjs.org/downloads")) return Response.json({ downloads: 50_000 });
     return routes[u] ? Response.json(routes[u]) : new Response("not found", { status: 404 });
   }) as typeof fetch;
@@ -102,4 +107,25 @@ test("scout: OSV malware in the lockfile and an unknown direct dependency", asyn
   const cats = r.findings.map(f => `${f.category}:${f.subject}`);
   expect(cats).toContain("malicious-package:evil-pkg@1.0.0");
   expect(cats).toContain("unknown-package:made-up-helper");
+});
+
+test("socket: malware OSV doesn't know yet is blocked in the check, the scanner and the scout", async () => {
+  const [r] = await check(["sneaky"]);
+  expect(r.verdict).toBe("block");
+  expect(r.findings[0]).toMatchObject({ category: "socket-malware", severity: "critical", fix: "Remove this package." });
+  expect(r.findings[0].detail).toContain("Steals npm tokens on import.");
+  const out = await scanner.scan({ packages: [{ name: "sneaky", version: "1.0.0", requestedRange: "^1.0.0", tarball: "" }] } as any);
+  expect(out.map(a => `${a.package}:${a.level}`)).toEqual(["sneaky:fatal"]);
+  const dir = mkdtempSync(join(tmpdir(), "bt-"));
+  writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "p", dependencies: { sneaky: "^1.0.0" } }));
+  writeFileSync(join(dir, "bun.lock"), `{"lockfileVersion":1,"packages":{"sneaky":["sneaky@1.0.0","",{},"sha512-x"]}}`);
+  const report = await scout(dir);
+  expect(report.findings[0]).toMatchObject({ category: "socket-malware", subject: "sneaky@1.0.0" });
+  expect(report.intel).toContain("socket: 1 versions");
+});
+
+test("socket: BUN_TSU_SOCKET=0 turns it off", async () => {
+  process.env.BUN_TSU_SOCKET = "0";
+  try { expect((await check(["sneaky"]))[0].findings.some(f => f.category.startsWith("socket"))).toBe(false); }
+  finally { delete process.env.BUN_TSU_SOCKET; }
 });

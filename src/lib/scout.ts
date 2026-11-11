@@ -3,7 +3,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { classify, imitates, POPULAR } from "./classify.ts";
 import { knownBad } from "./knownbad.ts";
-import { offline, osv, packument, pool } from "./registry.ts";
+import { offline, osv, packument, pool, socket, socketEnabled, socketFinding } from "./registry.ts";
 import { resolveSpec, signals } from "./signals.ts";
 
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
@@ -19,6 +19,7 @@ export const VECTOR: Record<string, string> = {
   "malicious-package": "malicious-update", "fresh-release": "malicious-update", "provenance-dropped": "malicious-update", "version-unpublished": "malicious-update",
   "install-script-added": "install-script", "new-publisher": "maintainer-takeover", "unmaintained": "maintainer-takeover", "outdated": "known-vuln",
   "unknown-package": "typosquat", "young-package": "typosquat", "few-downloads": "starjacking", "unclaimed-name": "dependency-confusion", "intel-unavailable": "general",
+  "socket-malware": "malicious-update", "socket-block": "malicious-update", "socket-warning": "malicious-update",
 };
 const LIFECYCLE = ["preinstall", "install", "postinstall", "prepare", "prepublish", "preprepare"];
 const SHADY = /(curl|wget)\b.*\|\s*(ba)?sh|\beval\b|base64\s+-d|node\s+-e|bun\s+-e|powershell|Invoke-WebRequest|\bnc\b\s/i;
@@ -55,7 +56,8 @@ export function customRegistry(dir: string): boolean {
 const LOCAL = /^(file:|link:|workspace:|portal:|\.{0,2}\/)/;
 const REMOTE = /^(git\+|git:|github:|gitlab:|bitbucket:|https?:|npm:)/;
 
-/** network: "full" checks OSV for every resolved version and the registry for direct deps; "osv" skips the registry; "none" stays offline. */
+/** network: "full" checks OSV and Socket for every resolved version and the registry for direct deps;
+ *  "osv" checks only OSV; "none" stays offline. */
 export async function scout(dirArg = ".", opts: { audit?: boolean; network?: "full" | "osv" | "none" } = {}): Promise<Report> {
   const dir = resolve(dirArg);
   const pkg = readJSON(join(dir, "package.json"));
@@ -155,6 +157,16 @@ export async function scout(dirArg = ".", opts: { audit?: boolean; network?: "fu
       }
     }
     if (net === "full") {
+      const flagged = await socket(list);
+      if (!flagged) intel += socketEnabled() ? ", socket unreachable" : ", socket off";
+      else {
+        intel += `, socket: ${list.length} versions`;
+        for (const [key, alerts] of flagged) for (const a of alerts) {
+          const s = socketFinding(a, key);
+          if (s.category === "socket-malware" && findings.some(f => f.subject === key && ["known-compromise", "malicious-package"].includes(f.category))) continue;
+          add(s.severity, s.category, key, s.detail, s.fix, { url: s.url });
+        }
+      }
       const direct = Object.keys(declared).filter(n => !LOCAL.test(declared[n]) && !REMOTE.test(declared[n]));
       let seen = 0, missing = 0;
       await pool(direct, 8, async name => {

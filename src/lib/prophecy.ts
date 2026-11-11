@@ -14,6 +14,12 @@ const VERSES: Record<string, ((f: Finding) => string)[]> = {
     f => `${short(f.subject)} is listed in the enemy's own muster rolls. He sleeps inside your walls tonight.`,
     f => `The watchmen of other cities have already hanged ${short(f.subject)} for treason. You still feed him.`,
   ],
+  "socket-malware": [
+    f => `A spy has opened the letters of ${short(f.subject)} and read the treachery inside. You have not yet opened them.`,
+    f => `${short(f.subject)} smiles at your gate. Those who searched his baggage did not smile.`,
+  ],
+  "socket-block": [f => `The scouts who search every wagon have turned ${short(f.subject)} away. You waved him through.`],
+  "socket-warning": [f => `The scouts frowned at ${short(f.subject)}, and wrote down why. Read what they wrote.`],
   "version-unpublished": [f => `The registry has struck ${short(f.subject)} from its rolls, yet he still stands in your ranks. Ask why he was dismissed.`],
   "fresh-release": [f => `${short(f.subject)} arrived this very morning, his armour still warm from the forge. No one has yet tested its seams.`],
   "provenance-dropped": [f => `Every earlier envoy of ${short(f.subject).split("@")[0]} carried the king's seal. This one carries only his word.`],
@@ -97,7 +103,7 @@ export function dominantType(r: Report): string {
 }
 
 export type Verse = { omen: string; finding: Finding; also: Finding[] };
-const PREFER = ["known-compromise", "malicious-package", "typosquat-suspect", "shady-install-script", "committed-token"];
+const PREFER = ["known-compromise", "malicious-package", "socket-malware", "typosquat-suspect", "shady-install-script", "committed-token"];
 
 export function prophesy(r: Report, max = 6): Prophecy {
   // group findings by package/file, keeping severity order
