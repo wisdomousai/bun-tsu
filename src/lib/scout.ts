@@ -3,21 +3,26 @@ import { existsSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { classify, imitates, POPULAR } from "./classify.ts";
 import { knownBad } from "./knownbad.ts";
+import { offline, osv, packument, pool } from "./registry.ts";
+import { resolveSpec, signals } from "./signals.ts";
 
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
 export type Finding = { severity: Severity; category: string; vector: string; types: string[]; subject: string; detail: string; fix: string; imitates?: string; url?: string };
-export type Report = { project: string; dir: string; lockfiles: string[]; declared: Record<string, number>; installed: number; resolved: number; audit: string; profile: Record<string, string[]>; findings: Finding[] };
+export type Report = { project: string; dir: string; lockfiles: string[]; declared: Record<string, number>; installed: number; resolved: number; audit: string; intel: string; profile: Record<string, string[]>; findings: Finding[] };
 
-const VECTOR: Record<string, string> = {
+export const VECTOR: Record<string, string> = {
   "known-compromise": "malicious-update", "shady-install-script": "install-script", "trusted-install-script": "install-script", "install-scripts": "install-script",
   "trusted-deps": "install-script", "shady-script": "install-script", "committed-token": "leaked-secrets", "env-unignored": "leaked-secrets",
   "no-lockfile": "version-drift", "loose-ranges": "version-drift", "wild-version": "version-drift", "multiple-lockfiles": "version-drift", "binary-lockfile": "version-drift",
   "typosquat-suspect": "typosquat", "remote-source": "remote-source", "deprecated": "maintainer-takeover", "known-vuln": "known-vuln",
   "dependency-confusion-risk": "dependency-confusion", "not-installed": "general",
+  "malicious-package": "malicious-update", "fresh-release": "malicious-update", "provenance-dropped": "malicious-update", "version-unpublished": "malicious-update",
+  "install-script-added": "install-script", "new-publisher": "maintainer-takeover", "unmaintained": "maintainer-takeover", "outdated": "known-vuln",
+  "unknown-package": "typosquat", "young-package": "typosquat", "few-downloads": "starjacking", "unclaimed-name": "dependency-confusion", "intel-unavailable": "general",
 };
 const LIFECYCLE = ["preinstall", "install", "postinstall", "prepare", "prepublish", "preprepare"];
 const SHADY = /(curl|wget)\b.*\|\s*(ba)?sh|\beval\b|base64\s+-d|node\s+-e|bun\s+-e|powershell|Invoke-WebRequest|\bnc\b\s/i;
-const ORDER: Record<Severity, number> = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+export const ORDER: Record<Severity, number> = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
 
 const readText = (p: string) => { try { return require("node:fs").readFileSync(p, "utf8") as string; } catch { return null; } };
 const readJSON = (p: string) => { const t = readText(p); try { return t ? JSON.parse(t) : null; } catch { return null; } };
@@ -41,7 +46,17 @@ export function resolvedVersions(dir: string): Map<string, Set<string>> {
   return out;
 }
 
-export async function scout(dirArg = ".", opts: { audit?: boolean } = {}): Promise<Report> {
+/** True when .npmrc or bunfig.toml points installs at a registry other than npmjs. */
+export function customRegistry(dir: string): boolean {
+  const text = (readText(join(dir, ".npmrc")) ?? "") + "\n" + (readText(join(dir, "bunfig.toml")) ?? "");
+  return text.split("\n").some(l => /registry\s*=/.test(l) && !/registry\.npmjs\.org/.test(l));
+}
+
+const LOCAL = /^(file:|link:|workspace:|portal:|\.{0,2}\/)/;
+const REMOTE = /^(git\+|git:|github:|gitlab:|bitbucket:|https?:|npm:)/;
+
+/** network: "full" checks OSV for every resolved version and the registry for direct deps; "osv" skips the registry; "none" stays offline. */
+export async function scout(dirArg = ".", opts: { audit?: boolean; network?: "full" | "osv" | "none" } = {}): Promise<Report> {
   const dir = resolve(dirArg);
   const pkg = readJSON(join(dir, "package.json"));
   if (!pkg) throw new Error(`No readable package.json in ${dir}`);
@@ -63,8 +78,8 @@ export async function scout(dirArg = ".", opts: { audit?: boolean } = {}): Promi
       declared[name] = spec; stats.total++;
       const s = String(spec).trim();
       if (["", "*", "latest", "next"].includes(s) || /^x(\.x)*$/i.test(s)) { stats.wild++; add("high", "wild-version", name, `Version "${s}" in ${g} accepts any future release, including a hijacked one.`, `Pin ${name} to a known version.`); }
-      else if (/^(git\+|git:|github:|gitlab:|bitbucket:|https?:)/.test(s) || /^[\w.-]+\/[\w.-]+(#.*)?$/.test(s)) { stats.remote++; add("medium", "remote-source", name, `Installed from "${s}", bypassing the registry; branch refs can change silently.`, "Use a registry release, or pin to a full commit SHA."); }
-      else if (/^(file:|link:|workspace:|\.{0,2}\/)/.test(s)) stats.local++;
+      else if ((REMOTE.test(s) && !s.startsWith("npm:")) || /^[\w.-]+\/[\w.-]+(#.*)?$/.test(s)) { stats.remote++; add("medium", "remote-source", name, `Installed from "${s}", bypassing the registry; branch refs can change silently.`, "Use a registry release, or pin to a full commit SHA."); }
+      else if (LOCAL.test(s)) stats.local++;
       else if (/^[\^~><=]/.test(s) || /\|\||\s-\s/.test(s)) stats.ranged++;
       else stats.pinned++;
     }
@@ -117,6 +132,51 @@ export async function scout(dirArg = ".", opts: { audit?: boolean } = {}): Promi
     if (hit) add("critical", "known-compromise", `${name}@${v}`, `This exact version was published by an attacker (${hit.incident}).`, `Remove ${name}@${v}, reinstall a clean version, rotate any secrets on machines or builds that ran it, and rebuild bundles.`, { url: hit.url });
   }
 
+  // Threat intel: OSV for every resolved version, the registry for direct deps
+  const net = offline() ? "none" : opts.network ?? "full";
+  const custom = customRegistry(dir);
+  let intel = "offline";
+  if (net !== "none") {
+    const list = [...resolved].flatMap(([name, vs]) => [...vs].filter(v => /^\d+\.\d+\.\d+/.test(v)).map(version => ({ name, version })));
+    const vulns = await osv(list);
+    if (!vulns) { intel = "osv unreachable"; add("info", "intel-unavailable", "osv.dev", "Could not reach OSV; only the built-in compromise list was checked.", "Retry with network access."); }
+    else {
+      intel = `osv: ${list.length} versions`;
+      for (const [key, vs] of vulns) {
+        const name = key.slice(0, key.lastIndexOf("@"));
+        const mal = vs.filter(v => v.malicious), adv = vs.filter(v => !v.malicious).sort((a, b) => ORDER[a.severity] - ORDER[b.severity]);
+        if (mal.length && !findings.some(f => f.category === "known-compromise" && f.subject === key))
+          add("critical", "malicious-package", key, `${mal[0].summary} (${mal.map(v => v.id).join(", ")}).`, `Remove ${key}, reinstall a clean version, and rotate every secret on machines or builds that installed it.`, { url: mal[0].url });
+        if (adv.length) {
+          const top = adv[0], fixed = adv.map(v => v.fixed).filter((v): v is string => !!v).sort(Bun.semver.order).pop();
+          add(top.severity, "known-vuln", key, adv.length === 1 ? `${top.summary} (${top.id}).` : `${adv.length} advisories; worst: ${top.summary} (${top.id}).`,
+            fixed ? `Upgrade ${name} to ${fixed} or later.` : `No fixed version is listed; see the advisory, or replace ${name}.`, { url: top.url });
+        }
+      }
+    }
+    if (net === "full") {
+      const direct = Object.keys(declared).filter(n => !LOCAL.test(declared[n]) && !REMOTE.test(declared[n]));
+      let seen = 0, missing = 0;
+      await pool(direct, 8, async name => {
+        const p = await packument(name);
+        if (p === null) return;
+        if (p === "missing") {
+          missing++;
+          if (!custom) add("high", "unknown-package", name, `There is no package called ${name} on the public npm registry. Anyone can register the name and be installed next time.`, `Check the name against the library's docs, or remove ${name}.`);
+          else if (!name.startsWith("@")) add("medium", "unclaimed-name", name, `${name} isn't on public npm. If it's internal, anyone can publish a public ${name} and a misrouted install would take it.`, `Move ${name} under an org scope mapped to your registry, and claim that scope on npm.`);
+          return;
+        }
+        seen++;
+        const have = [...(resolved.get(name) ?? [])].filter(v => p.versions?.[v] || /^\d/.test(v));
+        const fit = have.filter(v => { try { return Bun.semver.satisfies(v, declared[name]); } catch { return false; } });
+        for (const v of fit.length ? fit : have.length ? have : [resolveSpec(p, declared[name])].filter((x): x is string => !!x))
+          for (const s of signals(p, v)) if (!(s.category === "deprecated" && findings.some(f => f.category === "deprecated" && f.subject === name)))
+            add(s.severity, s.category, `${name}@${v}`, s.detail, s.fix);
+      });
+      intel += `, registry: ${seen}/${direct.length} direct deps` + (missing ? ` (${missing} not on npm)` : "");
+    }
+  }
+
   // Secrets hygiene (never print values)
   const npmrc = readText(join(dir, ".npmrc")) ?? "";
   const bunfig = readText(join(dir, "bunfig.toml")) ?? "";
@@ -131,8 +191,7 @@ export async function scout(dirArg = ".", opts: { audit?: boolean } = {}): Promi
   for (const name of Object.keys(declared)) { const t = classify(name, { native: nativeInstalled.has(name) }); ptypes[name] = t; for (const x of t.length ? t : ["other"]) (profile[x] ??= []).push(name); }
 
   // Dependency confusion hint
-  const custom = (npmrc + "\n" + bunfig).split("\n").some(l => /registry\s*=/.test(l) && !/registry\.npmjs\.org/.test(l));
-  if (custom) {
+  if (custom && net !== "full") {
     const unscoped = Object.keys(declared).filter(n => !n.startsWith("@") && !POPULAR.includes(n) && !ptypes[n].length);
     if (unscoped.length) add("low", "dependency-confusion-risk", unscoped.slice(0, 10).join(", "), `A custom registry is configured and ${unscoped.length} unscoped, unrecognised dependency name(s) exist; if any are internal, a public package of the same name could be preferred.`, "Move internal packages under an org scope (@yourorg/...) mapped to your registry, and claim that scope on npm.");
   }
@@ -157,5 +216,5 @@ export async function scout(dirArg = ".", opts: { audit?: boolean } = {}): Promi
     f.types = f.imitates ? classify(f.imitates) : ptypes[sub] ?? classify(sub);
   }
   findings.sort((a, b) => ORDER[a.severity] - ORDER[b.severity]);
-  return { project: pkg.name ?? dir, dir, lockfiles: locks, declared: stats, installed, resolved: resolvedCount, audit, profile, findings };
+  return { project: pkg.name ?? dir, dir, lockfiles: locks, declared: stats, installed, resolved: resolvedCount, audit, intel, profile, findings };
 }

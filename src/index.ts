@@ -4,3 +4,8 @@ export { pick, allQuotes, quoteOfTheDay, VECTORS, TYPES, type Quote } from "./li
 export { classify, imitates } from "./lib/classify.ts";
 export { knownBad } from "./lib/knownbad.ts";
 export { scanner } from "./scanner.ts";
+export { check, parseSpec, type Checked, type Verdict } from "./lib/check.ts";
+export { signals, resolveSpec } from "./lib/signals.ts";
+export { osv, packument } from "./lib/registry.ts";
+export { installTargets, runHook } from "./hook.ts";
+export { resolveStyle, setStyle, type Style } from "./lib/config.ts";

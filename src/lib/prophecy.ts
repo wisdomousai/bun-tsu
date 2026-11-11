@@ -10,6 +10,20 @@ const VERSES: Record<string, ((f: Finding) => string)[]> = {
     f => `The one who came to you as ${short(f.subject)} was not ${short(f.subject).split("@")[0]} at all, but an enemy wearing his armour for a single afternoon. You let him in during that afternoon.`,
     f => `${short(f.subject)}: the scrolls of the past already record this traitor's name. Only you have not read them.`,
   ],
+  "malicious-package": [
+    f => `${short(f.subject)} is listed in the enemy's own muster rolls. He sleeps inside your walls tonight.`,
+    f => `The watchmen of other cities have already hanged ${short(f.subject)} for treason. You still feed him.`,
+  ],
+  "version-unpublished": [f => `The registry has struck ${short(f.subject)} from its rolls, yet he still stands in your ranks. Ask why he was dismissed.`],
+  "fresh-release": [f => `${short(f.subject)} arrived this very morning, his armour still warm from the forge. No one has yet tested its seams.`],
+  "provenance-dropped": [f => `Every earlier envoy of ${short(f.subject).split("@")[0]} carried the king's seal. This one carries only his word.`],
+  "install-script-added": [f => `${short(f.subject)} brings a gift his elders never brought: a task to perform the moment the gate opens.`],
+  "new-publisher": [f => `The letter from ${short(f.subject).split("@")[0]} is in the old style, but the hand that wrote it is new.`],
+  "unknown-package": [f => `You summon a regiment called ${f.subject}, but no such regiment exists. The first stranger to answer to that name will be welcomed.`],
+  "unclaimed-name": [f => `The name ${f.subject} is yours only inside your walls. Outside, the first to claim it owns it.`],
+  "young-package": [f => `${short(f.subject).split("@")[0]} has served for less than a moon. Loyalty is not yet a habit.`],
+  "outdated": [f => `${short(f.subject)} fights with last season's weapons, and the armourers no longer mend them.`],
+  "unmaintained": [f => `The keep of ${short(f.subject).split("@")[0]} has had no commander for years. Abandoned keeps are taken without a siege.`],
   "shady-install-script": [
     f => `You welcomed ${f.subject} as a guest. Before you had read his letter of introduction, he turned his own key in your door.`,
     f => `${f.subject} does not wait to be called. He acts in the hour of installing, when no sentry is posted.`,
@@ -83,7 +97,7 @@ export function dominantType(r: Report): string {
 }
 
 export type Verse = { omen: string; finding: Finding; also: Finding[] };
-const PREFER = ["known-compromise", "typosquat-suspect", "shady-install-script", "committed-token"];
+const PREFER = ["known-compromise", "malicious-package", "typosquat-suspect", "shady-install-script", "committed-token"];
 
 export function prophesy(r: Report, max = 6): Prophecy {
   // group findings by package/file, keeping severity order

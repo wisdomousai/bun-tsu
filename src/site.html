@@ -381,9 +381,10 @@ footer p { max-width: 42rem; margin-bottom: .75rem; }
             <rect class="rodL" x="7" y="12" width="7" height="40" rx="3.5" fill="url(#rodpat)" stroke="var(--bamboo-dark)" stroke-width="1"/><rect class="rodR" x="50" y="12" width="7" height="40" rx="3.5" fill="url(#rodpat)" stroke="var(--bamboo-dark)" stroke-width="1"/>
           </svg>
           <h3>Ask for a prophecy</h3>
-          <p>Reads the project you are in and prints the scroll, then the plain translation.</p>
+          <p>Reads the project you are in and lists what is wrong and what to do. Ask for the prophecy and the scroll comes first.</p>
 <pre>bunx @wisdomousai/bun-tsu
-bunx @wisdomousai/bun-tsu --audit
+bunx @wisdomousai/bun-tsu --prophecy
+bunx @wisdomousai/bun-tsu config style prophecy  <span class="d"># always</span>
 bunx @wisdomousai/bun-tsu --strict  <span class="d"># fail CI</span></pre>
         </div>
         <div class="way" data-icon="gate">
@@ -400,12 +401,15 @@ bunx @wisdomousai/bun-tsu --strict  <span class="d"># fail CI</span></pre>
             <rect x="8" y="58" width="48" height="4" fill="var(--m2)"/>
           </svg>
           <h3>Post him at the gate</h3>
-          <p>Bun’s security scanner hook runs him before every <code>bun install</code>. He stops documented compromised versions and questions look-alike names.</p>
+          <p>Bun’s security scanner hook runs him before every <code>bun install</code>. He stops versions OSV lists as malware and questions look-alike names and suspicious new releases.</p>
 <pre>bun add -d @wisdomousai/bun-tsu
 bunx bun-tsu init
 <span class="d"># bunfig.toml</span>
 [install.security]
 scanner = "@wisdomousai/bun-tsu"</pre>
+          <p>In Claude Code, the plugin posts him in front of the agent too. Every <code>bun add</code>, <code>npm install</code> or <code>npx</code> it runs is checked first, and each session starts with the project’s findings.</p>
+<pre>/plugin marketplace add wisdomousai/bun-tsu
+/plugin install bun-tsu@bun-tsu</pre>
         </div>
         <div class="way" data-icon="bun">
           <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
@@ -465,7 +469,7 @@ preload = ["@wisdomousai/bun-tsu/preload"]</pre>
   <div class="text">
     <div class="wrap">
       <p>The general rests. Your lockfile does not.</p>
-      <p>Bun Tsu is a joke with a real scanner inside. The known-compromise list is a small, hand-checked sample, not a threat feed; pair it with maintained security tooling. Sun Tzu lines are from Lionel Giles’ 1910 translation, in the public domain. Everything else is apocrypha.</p>
+      <p>Bun Tsu is a joke with a real scanner inside. Malware and advisories come from <a href="https://osv.dev">OSV.dev</a>, release history from the npm registry, and a small hand-checked list of documented compromises covers offline use. Sun Tzu lines are from Lionel Giles’ 1910 translation, in the public domain. Everything else is apocrypha.</p>
       <p>A <a href="https://wisdomous.ai/vibecoding">wisdomous vibecoding</a> project. <a href="https://github.com/wisdomousai/bun-tsu">Source on GitHub</a>. MIT licensed.</p>
     </div>
   </div>

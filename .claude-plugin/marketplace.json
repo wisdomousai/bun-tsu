@@ -1,0 +1,7 @@
+{
+  "name": "bun-tsu",
+  "owner": { "name": "wisdomous.ai", "email": "hello@wisdomous.ai" },
+  "plugins": [
+    { "name": "bun-tsu", "source": "./", "description": "Supply-chain guard for agents: vets packages before install and reports the project's dependency risks." }
+  ]
+}

@@ -1,12 +1,16 @@
-import { test, expect } from "bun:test";
+import { test, expect, beforeAll } from "bun:test";
 import { scanner } from "../src/scanner.ts";
 import { imitates, classify } from "../src/lib/classify.ts";
 import { pick, allQuotes } from "../src/lib/quotes.ts";
 import { scout } from "../src/lib/scout.ts";
 import { prophesy } from "../src/lib/prophecy.ts";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { resolveStyle, setStyle } from "../src/lib/config.ts";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+
+// these tests use only the built-in data; test/intel.test.ts mocks the network
+beforeAll(() => { process.env.BUN_TSU_OFFLINE = "1"; });
 
 const pkg = (name: string, version: string, requestedRange = version) => ({ name, version, requestedRange, tarball: "" });
 
@@ -61,4 +65,33 @@ test("a clean project gets a serene prophecy", async () => {
   writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "zen", dependencies: { zod: "3.23.8" } }));
   writeFileSync(join(dir, "bun.lock"), `{"lockfileVersion":1,"packages":{}}`);
   expect(prophesy(await scout(dir)).serene).toBe(true);
+});
+
+test("style: flag, then env, then repo, then global, then plain", () => {
+  const dir = mkdtempSync(join(tmpdir(), "bt-")), xdg = mkdtempSync(join(tmpdir(), "bt-xdg-"));
+  const saved = { xdg: process.env.XDG_CONFIG_HOME, style: process.env.BUN_TSU_STYLE };
+  process.env.XDG_CONFIG_HOME = xdg; delete process.env.BUN_TSU_STYLE;
+  try {
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "s" }, null, 4));
+    expect(resolveStyle(dir)).toEqual({ style: "plain", source: "default" });
+    setStyle("prophecy", { global: true });
+    expect(resolveStyle(dir)).toEqual({ style: "prophecy", source: "global" });
+    setStyle("plain", { dir });
+    expect(resolveStyle(dir)).toEqual({ style: "plain", source: "repo" });
+    expect(readFileSync(join(dir, "package.json"), "utf8")).toContain('    "bun-tsu"'); // keeps the file's indent
+    process.env.BUN_TSU_STYLE = "prophecy";
+    expect(resolveStyle(dir)).toEqual({ style: "prophecy", source: "env" });
+    expect(resolveStyle(dir, "plain")).toEqual({ style: "plain", source: "flag" });
+  } finally {
+    if (saved.xdg === undefined) delete process.env.XDG_CONFIG_HOME; else process.env.XDG_CONFIG_HOME = saved.xdg;
+    if (saved.style === undefined) delete process.env.BUN_TSU_STYLE; else process.env.BUN_TSU_STYLE = saved.style;
+  }
+});
+
+test("scanner: plain instructions by default, an omen in the prophecy style", async () => {
+  const scan = async () => (await scanner.scan({ packages: [pkg("chalk", "5.6.1")] } as any))[0].description;
+  expect(await scan()).toBe("Bun Tsu: chalk@5.6.1 was published by an attacker (chalk, debug and friends (Sept 2025)). Do not install it; use another version.");
+  process.env.BUN_TSU_STYLE = "prophecy";
+  try { expect(await scan()).toStartWith('Bun Tsu: "The one who came as chalk@5.6.1 wears stolen armour."'); }
+  finally { delete process.env.BUN_TSU_STYLE; }
 });

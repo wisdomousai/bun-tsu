@@ -1,0 +1,10 @@
+{
+  "name": "bun-tsu",
+  "version": "0.2.0",
+  "description": "Checks npm packages before the agent installs them (malware, guessed names, typosquats, suspicious releases, known advisories) and briefs the agent on the project's supply-chain findings at session start. Needs Bun 1.3+.",
+  "author": { "name": "wisdomous.ai", "email": "hello@wisdomous.ai", "url": "https://wisdomous.ai" },
+  "homepage": "https://wisdomousai.github.io/bun-tsu/",
+  "repository": "https://github.com/wisdomousai/bun-tsu",
+  "license": "MIT",
+  "keywords": ["security", "supply-chain", "npm", "bun", "dependencies"]
+}
