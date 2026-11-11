@@ -4,6 +4,7 @@ import { imitates, classify } from "../src/lib/classify.ts";
 import { pick, allQuotes } from "../src/lib/quotes.ts";
 import { scout } from "../src/lib/scout.ts";
 import { prophesy } from "../src/lib/prophecy.ts";
+import { claudify } from "../src/lib/claudish.ts";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { resolveStyle, setStyle } from "../src/lib/config.ts";
 import { join } from "node:path";
@@ -94,4 +95,18 @@ test("scanner: plain instructions by default, an omen in the prophecy style", as
   process.env.BUN_TSU_STYLE = "prophecy";
   try { expect(await scan()).toStartWith('Bun Tsu: "The one who came as chalk@5.6.1 wears stolen armour."'); }
   finally { delete process.env.BUN_TSU_STYLE; }
+});
+
+test("claudish: real findings and fixes inside the slop", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "bt-"));
+  writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "sloppy", dependencies: { expresss: "1.0.0" } }));
+  writeFileSync(join(dir, "bun.lock"), `{"lockfileVersion":1,"packages":{"debug":["debug@4.4.2","",{},"sha512-x"],}}`);
+  const r = await scout(dir);
+  const text = claudify(r);
+  expect(text).toContain("This isn't just");
+  expect(text).toContain("One critical issue.");
+  for (const f of r.findings.filter(f => f.severity !== "info")) { expect(text).toContain(f.detail); expect(text).toContain(f.fix); }
+  writeFileSync(join(dir, "bun.lock"), `{"lockfileVersion":1,"packages":{}}`);
+  writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "zen", dependencies: { zod: "3.23.8" } }));
+  expect(claudify(await scout(dir))).toContain("One package. Zero findings.");
 });

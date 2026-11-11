@@ -80,7 +80,8 @@ export async function sessionStart(input: any): Promise<Answer> {
     ...shown.map(f => `- ${f.severity.toUpperCase()} ${f.subject} [${f.category}]: ${f.detail} Fix: ${f.fix}`),
     serious.length > shown.length ? `(${serious.length - shown.length} more; run \`bunx @wisdomousai/bun-tsu scout --json\`.)` : "",
     "Mention critical and high findings to the user when they touch dependencies. Do not install, remove or upgrade packages to fix these unless the user asks.",
-    style === "prophecy" ? "The user chose the Bun Tsu prophecy style: when you report these findings, write the scroll first and then the plain table, as the bun-tsu skill describes." : ""].filter(Boolean).join("\n");
+    style === "prophecy" ? "The user chose the Bun Tsu prophecy style: when you report these findings, write the scroll first and then the plain table, as the bun-tsu skill describes." : "",
+    style === "claudish" ? "The user chose the Bun Tsu claudish style: when you report these findings, write them as the parody of AI slop the bun-tsu skill describes, keeping every fact and fix exact." : ""].filter(Boolean).join("\n");
   return { hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: text } };
 }
 

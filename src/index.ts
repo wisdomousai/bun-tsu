@@ -9,3 +9,4 @@ export { signals, resolveSpec } from "./lib/signals.ts";
 export { osv, packument } from "./lib/registry.ts";
 export { installTargets, runHook } from "./hook.ts";
 export { resolveStyle, setStyle, type Style } from "./lib/config.ts";
+export { claudify } from "./lib/claudish.ts";

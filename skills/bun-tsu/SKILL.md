@@ -8,7 +8,7 @@ description: Checks npm packages for supply-chain risk with the Bun Tsu scanner.
 Bun Tsu has three modes. Pick the mode from the request.
 
 - **Guard**: you are about to add, upgrade or run an npm package. Check it first.
-- **Report**: the user wants their project's dependencies checked. Run the scout and report the findings plainly. Write the prophecy instead only when the style is `prophecy` (see below) or the user asks for one.
+- **Report**: the user wants their project's dependencies checked. Run the scout and report the findings plainly. Use the prophecy or claudish style instead only when the scout's `style` says so or the user asks for it.
 - **Oracle**: the user wants a saying. Run the quote command and show the result.
 
 All modes use `bunx @wisdomousai/bun-tsu` and need Bun 1.3 or later. If `bunx` is missing, tell the user to install Bun from https://bun.sh and stop. Do not reproduce the checks by hand.
@@ -43,7 +43,7 @@ If the Bun Tsu Claude Code plugin is installed, a hook runs this check on instal
 
    Add `--offline` only when the user asks for no network access.
 
-2. Read the JSON. Each entry in `findings` has `severity`, `category`, `vector`, `types`, `subject`, `detail`, `fix` and sometimes `imitates` and `url`. `profile` groups the declared packages by purpose. `intel` says what was checked online. `style` is the user's output style: `plain` (the default) or `prophecy`.
+2. Read the JSON. Each entry in `findings` has `severity`, `category`, `vector`, `types`, `subject`, `detail`, `fix` and sometimes `imitates` and `url`. `profile` groups the declared packages by purpose. `intel` says what was checked online. `style` is the user's output style: `plain` (the default), `prophecy` or `claudish`.
 
 3. With the `plain` style, write:
    - One line on what was checked, from `declared`, `resolved` and `intel`.
@@ -74,6 +74,16 @@ Use this only when the scout's `style` is `prophecy` or the user asks for a prop
    - The closing saying with its source exactly as the quote command returned it.
 
 4. Under the scroll, write a section headed `Plain scroll` with the table and fix order from the plain report.
+
+## Claudish
+
+Use this only when the scout's `style` is `claudish` or the user asks for it. It is a parody of AI-generated slop. Get the example text with:
+
+```sh
+bunx @wisdomousai/bun-tsu --claudish <dir>
+```
+
+Then write the report in that voice: a sycophantic opener, emoji headings (TL;DR, Key Findings, The Bottom Line, Key Takeaways), "This isn't just X. It's Y." for each finding, lists of three, number pairs ("Two critical issues. One mission."), one-line beats ("Let that sink in."), em dashes, bold words, and a closing offer to do more. Every finding, detail, fix and URL stays exact; only the wrapping is slop. Keep the parody in this report and write the rest of the conversation normally.
 
 ## Oracle
 

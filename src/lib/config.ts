@@ -1,12 +1,13 @@
 // Output style. "plain" (default): findings and what to do. "prophecy": the scroll, then the plain findings.
-// Precedence: --prophecy/--plain flag, BUN_TSU_STYLE, the repo's package.json "bun-tsu" key, the global config file.
+// "claudish": the findings as a parody of AI slop.
+// Precedence: --prophecy/--claudish/--plain flag, BUN_TSU_STYLE, the repo's package.json "bun-tsu" key, the global config file.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
 
-export type Style = "plain" | "prophecy";
+export type Style = "plain" | "prophecy" | "claudish";
 export type StyleSource = "flag" | "env" | "repo" | "global" | "default";
-export const STYLES: Style[] = ["plain", "prophecy"];
+export const STYLES: Style[] = ["plain", "prophecy", "claudish"];
 
 export const globalConfigPath = () => join(process.env.XDG_CONFIG_HOME ?? join(homedir(), ".config"), "bun-tsu", "config.json");
 const read = (p: string) => { try { return JSON.parse(readFileSync(p, "utf8")); } catch { return null; } };

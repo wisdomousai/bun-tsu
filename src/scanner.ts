@@ -4,7 +4,7 @@
 // Fatal: malware reported to OSV, and exact versions from the built-in list of documented compromises.
 // Warn: typosquat-looking names, and new arrivals (not yet in bun.lock) that were published in the last 72 hours,
 //       dropped provenance or added an install script.
-// Messages are plain instructions; with the prophecy style (see lib/config.ts) each starts with an omen.
+// Messages are plain instructions; the prophecy style (see lib/config.ts) adds an omen, the claudish style adds slop.
 // Env: BUN_TSU_STRICT=1 also warns on critical advisories, 'latest'/'*' and git/URL sources.
 //      BUN_TSU_OFFLINE=1 skips the network. BUN_TSU_QUIET=1 silences the art.
 import { readFileSync } from "node:fs";
@@ -37,8 +37,9 @@ export const scanner: Bun.Security.Scanner = {
     const locked = resolvedVersions(process.cwd());
     const arriving = (p: { name: string; version: string }) => !locked.get(p.name)?.has(p.version);
     const strict = !!process.env.BUN_TSU_STRICT;
-    const prophecy = resolveStyle(process.cwd()).style === "prophecy";
-    const say = (text: string, omen: string) => prophecy ? `Bun Tsu: "${omen}" ${text}` : `Bun Tsu: ${text}`;
+    const { style } = resolveStyle(process.cwd()), prophecy = style === "prophecy";
+    const say = (text: string, omen: string) => prophecy ? `Bun Tsu: "${omen}" ${text}`
+      : style === "claudish" ? `Bun Tsu: Great catch! 🎯 ${text} This isn't just a warning — it's a wake-up call. Let that sink in. 🚨` : `Bun Tsu: ${text}`;
     const registry = packages.filter(p => /^\d+\.\d+\.\d+/.test(p.version));
     const vulns = await osv(registry.map(p => ({ name: p.name, version: p.version })));
 

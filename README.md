@@ -78,6 +78,7 @@ The CLI needs Bun 1.3 or later.
 ```sh
 bunx @wisdomousai/bun-tsu                 # check this project: problems and what to do
 bunx @wisdomousai/bun-tsu --prophecy      # the same, as Bun Tsu's scroll first
+bunx @wisdomousai/bun-tsu --claudish      # the same, as AI slop
 bunx @wisdomousai/bun-tsu quote --vector typosquat --type auth
 bunx @wisdomousai/bun-tsu tags            # every attack vector and package type
 bunx @wisdomousai/bun-tsu scout --json    # raw findings, for agents and CI
@@ -217,6 +218,37 @@ bunx @wisdomousai/bun-tsu config                           # show the style in e
 ```
 
 The flag wins over the environment, the environment over the repo, and the repo over the global file. The style also applies to the Bun install scanner's messages, and the agent skill writes the scroll when the style is `prophecy`. The agent hooks always report plainly.
+
+## Claudish style
+
+A third style, `claudish`, writes the report as a parody of AI slop. It uses the usual signs: a sycophantic opener, emoji headings, "This isn't just X. It's Y.", lists of three, number pairs, one-line beats, and an offer to make a slide deck. The findings, fixes and links inside it are the same as in the plain report.
+
+```sh
+bunx @wisdomousai/bun-tsu --claudish
+bunx @wisdomousai/bun-tsu config style claudish    # this repo; add --global for every repo
+```
+
+Excerpt:
+
+```markdown
+## 🚀 TL;DR
+
+Two critical issues. Five high-severity risks. One mission. 🎯
+
+### 1. `debug@4.4.2` — The Wolf in Sheep's Clothing 🐺
+
+This isn't just a version bump. It's a breach.
+
+**Here's what's happening:** This exact version was published by an attacker (chalk, debug and friends (Sept 2025)).
+
+This impacts your **codebase**, your **customers**, and your **credibility**. Wild, right?
+
+**The fix?** Remove debug@4.4.2, reinstall a clean version, rotate any secrets on machines or builds that ran it, and rebuild bundles.
+
+Simple. Effective. Done. ✅
+```
+
+The style applies to the CLI report, the Bun install scanner's messages and the agent skill, like the prophecy style. The agent hooks stay plain.
 
 ## What the scout checks
 

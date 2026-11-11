@@ -7,6 +7,7 @@ import { resolveStyle, setStyle, globalConfigPath, STYLES, type Style } from "./
 import { check } from "./lib/check.ts";
 import { runHook } from "./hook.ts";
 import { prophesy, numeral, dominantType } from "./lib/prophecy.ts";
+import { claudify } from "./lib/claudish.ts";
 import { pick, allQuotes, VECTORS, TYPES } from "./lib/quotes.ts";
 import { banner, scroll, mini, c, wrap, seal } from "./lib/art.ts";
 
@@ -17,7 +18,7 @@ const valued = new Set(["vector", "type", "source", "n"].map(k => `--${k}`));
 const positional = argv.filter((a, i) => !a.startsWith("--") && !valued.has(argv[i - 1] ?? ""));
 const commands = ["report", "prophecy", "quote", "scout", "check", "hook", "tags", "init", "config", "help"];
 const cmd = commands.includes(positional[0]) ? positional.shift()! : "report";
-const flagged: Style | undefined = cmd === "prophecy" || flag("prophecy") ? "prophecy" : flag("plain") ? "plain" : undefined;
+const flagged: Style | undefined = cmd === "prophecy" || flag("prophecy") ? "prophecy" : flag("claudish") ? "claudish" : flag("plain") ? "plain" : undefined;
 const { style, source } = resolveStyle(cmd === "report" || cmd === "prophecy" ? positional[0] ?? "." : ".", flagged);
 const art = style === "prophecy" && !flag("no-art") && !flag("json");
 const SEV = { critical: c.red, high: c.seal, medium: c.yellow, low: c.cyan, info: c.grey } as const;
@@ -32,7 +33,7 @@ function help() {
     bun-tsu check <pkg[@range]>...      Vet packages before installing them
     bun-tsu hook <event>                Claude Code hook (pre-tool-use, session-start), JSON on stdin
     bun-tsu tags                        List attack vectors and package types
-    bun-tsu config [style <plain|prophecy>] [--global]
+    bun-tsu config [style <plain|prophecy|claudish>] [--global]
                                         Show or set the output style for this repo (package.json) or everywhere
     bun-tsu init [--preload] [--claude] Install Bun Tsu as your bun install security scanner
                                         (--claude also adds the Claude Code hooks to .claude/settings.json)
@@ -44,7 +45,7 @@ function help() {
     --offline   skip OSV and the npm registry (also BUN_TSU_OFFLINE=1)
     --strict    exit 1 if anything critical or high is found
     --all       include info findings in the report
-    --prophecy  use the prophecy style; --plain forces the plain one (also BUN_TSU_STYLE)
+    --prophecy  use the prophecy style; --claudish the AI-slop one; --plain forces plain (also BUN_TSU_STYLE)
     --no-art    skip the ASCII art in the prophecy style (NO_COLOR also respected)
     --json      machine-readable output
 `);
@@ -170,6 +171,7 @@ async function report() {
   const strictFail = flag("strict") && report.findings.some(f => f.severity === "critical" || f.severity === "high");
   if (flag("json") || cmd === "scout") console.log(JSON.stringify({ ...report, style }, null, 2));
   else if (style === "prophecy") prophecy(report);
+  else if (style === "claudish") console.log("\n" + claudify(report) + "\n");
   else plain(report);
   process.exit(strictFail ? 1 : 0);
 }
