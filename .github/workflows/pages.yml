@@ -1,4 +1,4 @@
-# Runs the tests, rebuilds docs/index.html from src/site.html and the quotes, and publishes it on GitHub Pages.
+# Runs the tests, builds site/dist from site/ and the quotes, and publishes it on GitHub Pages.
 name: Pages
 
 on:
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: docs
+          path: site/dist
 
   deploy:
     needs: build

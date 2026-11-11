@@ -301,6 +301,13 @@ To use the skill without the plugin's hooks:
 cp -R skills/bun-tsu ~/.claude/skills/
 ```
 
+## Repository layout
+
+- `src/`: the scanner, CLI, hooks and library. This is all the npm package ships.
+- `test/`: `bun test`.
+- `.claude-plugin/`, `hooks/`, `skills/`: the Claude Code plugin and marketplace entry.
+- `site/`: the website (`index.html`, the painted `art/`, `build.ts`). `bun run build:site` writes `site/dist/`, and the Pages workflow publishes it on every push to `main`.
+
 ## Publishing
 
 Published as `@wisdomousai/bun-tsu` under the wisdomousai npm scope. Run `bun publish`; `publishConfig.access` is already `public`, which scoped packages need. The `bin` points at a TypeScript file with a `#!/usr/bin/env bun` shebang, so the CLI needs Bun.
